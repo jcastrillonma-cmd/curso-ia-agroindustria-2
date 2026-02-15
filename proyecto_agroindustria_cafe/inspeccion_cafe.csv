@@ -1,0 +1,11 @@
+lote_id,fecha,peso_muestra_g,humedad_pct,defectos,color,origen
+L001,2026-02-15,350,11.8,3,verde,Huila
+L001,2026-02-15,350,12.5,7,verde,Huila
+L002,2026-02-15,350,10.9,1,verde,Antioquia
+L003,2026-02-14,350,13.8,9,amarillento,Caldas
+L004,2026-02-15,350,9.5,2,verde,Nariño
+L005,2026-02-15,350,11.2,6,verde,Tolima
+L006,2026-02-15,350,10.7,2,verde,Huila
+L007,2026-02-14,350,12.9,8,amarillento,Caldas
+L008,2026-02-15,350,11.5,4,verde,Antioquia
+L009,2026-02-15,350,10.3,1,verde,Nariño
