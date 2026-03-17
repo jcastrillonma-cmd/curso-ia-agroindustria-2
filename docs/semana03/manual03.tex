@@ -187,7 +187,7 @@ Nuestro DataFrame de Pandas actuará como un \textbf{Digital Twin} de bajo nivel
 
 \subsection{La Anatomía de un DataFrame}
 
-Un DataFrame es una \textbf{tabla en memoria RAM} con índice explícito y columnas etiquetadas, similar a una tabla SQL, pero optimizada para análisis en Python.[web:18][web:19] En ingeniería de datos lo usamos como ``mini base de datos en memoria'' para aplicar transformaciones, validar la calidad y luego escribir resultados hacia sistemas más grandes (SQL, data lakes, etc.).[web:20][web:21][web:29]
+Un DataFrame es una \textbf{tabla en memoria RAM} con índice explícito y columnas etiquetadas, similar a una tabla SQL, pero optimizada para análisis en Python. En ingeniería de datos lo usamos como ``mini base de datos en memoria'' para aplicar transformaciones, validar la calidad y luego escribir resultados hacia sistemas más grandes (SQL, data lakes, etc.).
 
 A diferencia de NumPy (donde accedes por posición), Pandas permite consultas tipo SQL.
 
@@ -210,7 +210,7 @@ A diferencia de NumPy (donde accedes por posición), Pandas permite consultas ti
 \end{tikzpicture}
 \end{center}
 
-La parte más subestimada por principiantes son los \textbf{dtypes}: definen si una columna se comporta como número, fecha, texto o categoría.[web:18][web:19] Elegir bien los tipos de datos es el primer paso hacia un código más rápido, con menos errores y más cercano a los estándares de ingeniería profesional.[web:23][web:24]
+La parte más subestimada por principiantes son los \textbf{dtypes}: definen si una columna se comporta como número, fecha, texto o categoría. Elegir bien los tipos de datos es el primer paso hacia un código más rápido, con menos errores y más cercano a los estándares de ingeniería profesional.
 
 \textbf{Diferencia clave con NumPy}:
 \begin{itemize}
@@ -236,7 +236,7 @@ Uso típico & Una medición & Dataset completo \\
 \caption{Comparación Series-DataFrame}
 \end{table}
 
-En proyectos pequeños puedes trabajar solo con DataFrames, pero en proyectos industriales es común combinar \textbf{Series} para cálculos rápidos (estadísticos o de control) y \textbf{DataFrames} como capa principal de integración de datos de múltiples sistemas (SCADA, LIMS, ERP).[web:25][web:31]
+En proyectos pequeños puedes trabajar solo con DataFrames, pero en proyectos industriales es común combinar \textbf{Series} para cálculos rápidos (estadísticos o de control) y \textbf{DataFrames} como capa principal de integración de datos de múltiples sistemas (SCADA, LIMS, ERP).
 
 \begin{lstlisting}[language=Python, caption={Crear Series y DataFrame desde código}]
 import pandas as pd
@@ -263,12 +263,12 @@ print(df.dtypes)
 
 \subsection{Carga de Datos Industriales}
 
-Desde la perspectiva de ingeniería de datos, este paso se conoce como \textbf{ingestión de datos}: recibir información cruda desde sistemas operativos (OT) y sistemas de negocio (IT) y convertirla en DataFrames consistentes para análisis posterior.[web:25][web:28]
+Desde la perspectiva de ingeniería de datos, este paso se conoce como \textbf{ingestión de datos}: recibir información cruda desde sistemas operativos (OT) y sistemas de negocio (IT) y convertirla en DataFrames consistentes para análisis posterior.
 
 En la industria, los datos vienen de múltiples fuentes:
 
 \begin{itemize}
-    \item \textbf{SCADA} (sistemas de control): CSV/Excel exportados desde sistemas que hablan protocolos industriales (OPC UA, Modbus, MQTT), casi siempre con timestamps.[web:25][web:28]
+    \item \textbf{SCADA} (sistemas de control): CSV/Excel exportados desde sistemas que hablan protocolos industriales (OPC UA, Modbus, MQTT), casi siempre con timestamps.
     \item \textbf{LIMS} (laboratorio): Resultados en archivos Excel con hojas múltiples
     \item \textbf{ERP} (SAP/Oracle): Exportaciones CSV con separadores raros y codificaciones regionales
     \item \textbf{Sensores IoT}: JSON desde APIs REST
@@ -333,7 +333,7 @@ Confundir \texttt{.loc[]} (etiquetas) con \texttt{.iloc[]} (posiciones). Esto ca
 \caption{Métodos de indexación en Pandas}
 \end{table}
 
-En ingeniería de datos industrial, el 80\% de los errores de producción provienen de indexación incorrecta.[web:23] Elegir el método correcto no es solo sintaxis — es una decisión de \textbf{robustez} y \textbf{mantenibilidad}.[web:26][web:29]
+En ingeniería de datos industrial, el 80\% de los errores de producción provienen de indexación incorrecta. Elegir el método correcto no es solo sintaxis — es una decisión de \textbf{robustez} y \textbf{mantenibilidad}.
 
 \begin{lstlisting}[language=Python, caption={Ejemplos de indexación}]
 import pandas as pd
@@ -370,7 +370,7 @@ print("Tipo de subset:", type(subset)) # <class 'pandas.core.frame.DataFrame'>
 
 \subsection{Filtrado Booleano (Máscaras)}
 
-El poder real de Pandas está en las \textbf{consultas vectorizadas}. No uses bucles \texttt{for} — usa máscaras booleanas. Esta es la base de la eficiencia en pipelines de datos industriales.[web:23][web:26]
+El poder real de Pandas está en las \textbf{consultas vectorizadas}. No uses bucles \texttt{for} — usa máscaras booleanas. Esta es la base de la eficiencia en pipelines de datos industriales.
 
 \begin{lstlisting}[language=Python, caption={Filtrado avanzado para control de calidad}]
 import pandas as pd
@@ -422,7 +422,7 @@ Una máscara booleana \texttt{df['temp'] > 72} tiene complejidad \( O(n) \) dond
     \item El filtrado \texttt{df[mask]} usa fancy indexing de NumPy
 \end{enumerate}
 
-Para un DataFrame de 1M filas, esto toma $\sim$10ms. Un bucle \texttt{for} equivalente tomaría $\sim$2 segundos (200x más lento).[web:23]
+Para un DataFrame de 1M filas, esto toma $\sim$10ms. Un bucle \texttt{for} equivalente tomaría $\sim$2 segundos (200x más lento).
 \end{sciencebox}
 
 \begin{conceptbox}{Buena práctica \#2: Nombres descriptivos para filtros}
@@ -456,7 +456,7 @@ Si una columna numérica aparece como \texttt{dtype: object}, significa que Pand
     \item Espacios en blanco: " 25.5 " no se convierte automáticamente
 \end{itemize}
 
-\textbf{Este es el primer paso de Data Quality Engineering:} asegurar que cada columna tenga el \texttt{dtype} correcto desde la ingestión. Un ingeniero de datos profesional nunca deja pasar datos con tipos incorrectos a la siguiente etapa del pipeline.[web:23][web:26]
+\textbf{Este es el primer paso de Data Quality Engineering:} asegurar que cada columna tenga el \texttt{dtype} correcto desde la ingestión. Un ingeniero de datos profesional nunca deja pasar datos con tipos incorrectos a la siguiente etapa del pipeline.
 
 \begin{lstlisting}[language=Python, caption={Diagnóstico y corrección de tipos}]
 import pandas as pd
@@ -492,7 +492,7 @@ print(f"Convertidos {df['temperatura'].isna().sum()} valores inválidos a NaN")
 
 \subsection{Tratamiento de Valores Faltantes}
 
-En la industria alimenticia, \textbf{un dato faltante puede significar un fallo crítico}. No siempre es correcto rellenar con el promedio. La decisión debe basarse en el \textbf{conocimiento del dominio} y los requisitos de trazabilidad (ISO 22000, HACCP).[web:23]
+En la industria alimenticia, \textbf{un dato faltante puede significar un fallo crítico}. No siempre es correcto rellenar con el promedio. La decisión debe basarse en el \textbf{conocimiento del dominio} y los requisitos de trazabilidad (ISO 22000, HACCP).
 
 \begin{table}[h]
 \centering
@@ -600,7 +600,7 @@ Siempre aplica en este orden. Los límites físicos son los más confiables.
 
 \subsection{El Paradigma Split-Apply-Combine}
 
-\texttt{.groupby()} es la operación más importante en Pandas. Implementa el patrón \textit{split-apply-combine}, que es el corazón de los \textbf{pipelines de agregación} en Data Engineering.[web:23][web:26]
+\texttt{.groupby()} es la operación más importante en Pandas. Implementa el patrón \textit{split-apply-combine}, que es el corazón de los \textbf{pipelines de agregación} en Data Engineering.
 
 \begin{center}
 \begin{tikzpicture}[
@@ -619,7 +619,7 @@ Siempre aplica en este orden. Los límites físicos son los más confiables.
 \end{tikzpicture}
 \end{center}
 
-\textbf{Aplicación industrial}: Generar reportes de KPIs (Key Performance Indicators), calcular OEE (Overall Equipment Effectiveness) y detectar desviaciones de rendimiento por línea o turno.[web:23]
+\textbf{Aplicación industrial}: Generar reportes de KPIs (Key Performance Indicators), calcular OEE (Overall Equipment Effectiveness) y detectar desviaciones de rendimiento por línea o turno.
 
 \begin{lstlisting}[language=Python, caption={Análisis de productividad por línea (KPIs industriales)}]
 import pandas as pd
@@ -673,7 +673,7 @@ oee = df.groupby('linea').apply(lambda x: calcular_oee(x))
 
 \subsection{GroupBy con Transformaciones}
 
-A veces no quieres reducir el DataFrame, sino \textbf{agregar columnas calculadas por grupo} que se mantienen alineadas con el índice original. Esto es esencial para \textbf{benchmarking} y normalización.[web:23]
+A veces no quieres reducir el DataFrame, sino \textbf{agregar columnas calculadas por grupo} que se mantienen alineadas con el índice original. Esto es esencial para \textbf{benchmarking} y normalización.
 
 \begin{lstlisting}[language=Python, caption={Normalización y ranking por grupo}]
 import pandas as pd
@@ -720,7 +720,7 @@ Internamente, \texttt{.groupby()} usa un algoritmo de hashing para agrupar filas
 
 Complejidad total: \( O(n \log n) \). Para 1M filas, esto toma $\sim$100ms en un CPU moderno.
 
-\textbf{Comparación}: Un bucle manual con diccionarios tomaría $\sim$5 segundos (50x más lento).[web:23]
+\textbf{Comparación}: Un bucle manual con diccionarios tomaría $\sim$5 segundos (50x más lento).
 \end{sciencebox}
 
 \newpage
@@ -728,9 +728,9 @@ Complejidad total: \( O(n \log n) \). Para 1M filas, esto toma $\sim$100ms en un
 
 \subsection{Datetime como Index}
 
-En la industria, \textbf{el tiempo es el índice natural} de los datos. Convertir el DataFrame a índice temporal desbloquea operaciones avanzadas como \textbf{resampling} y \textbf{rolling windows}, esenciales para SPC (Statistical Process Control) y detección de anomalías en tiempo real.[web:23][web:31]
+En la industria, \textbf{el tiempo es el índice natural} de los datos. Convertir el DataFrame a índice temporal desbloquea operaciones avanzadas como \textbf{resampling} y \textbf{rolling windows}, esenciales para SPC (Statistical Process Control) y detección de anomalías en tiempo real.
 
-\textbf{¿Por qué es crítico?} Los sistemas SCADA y sensores IoT generan datos timestamped. Sin índice temporal, pierdes la capacidad de hacer slicing por rangos de fecha y análisis de tendencias.[web:25][web:28]
+\textbf{¿Por qué es crítico?} Los sistemas SCADA y sensores IoT generan datos timestamped. Sin índice temporal, pierdes la capacidad de hacer slicing por rangos de fecha y análisis de tendencias.
 
 \begin{lstlisting}[language=Python, caption={Configurar índice temporal (estándar industrial)}]
 import pandas as pd
@@ -878,7 +878,7 @@ En agroindustria alimenticia, la trazabilidad es \textbf{un requisito legal} (HA
     \item ¿Qué materia prima se usó en un lote con defecto?
 \end{itemize}
 
-Esto requiere \textbf{Data Integration}: cruzar múltiples tablas heterogéneas usando \texttt{pd.merge()}. En Data Engineering, esto se conoce como \textbf{ETL de enriquecimiento}.[web:23][web:26]
+Esto requiere \textbf{Data Integration}: cruzar múltiples tablas heterogéneas usando \texttt{pd.merge()}. En Data Engineering, esto se conoce como \textbf{ETL de enriquecimiento}.
 
 \subsection{Tipos de Merge}
 
@@ -897,7 +897,7 @@ Esto requiere \textbf{Data Integration}: cruzar múltiples tablas heterogéneas 
 \caption{Tipos de merge en Pandas}
 \end{table}
 
-\textbf{¿Cuál usar en trazabilidad?} Siempre \texttt{left} cuando sigues la cadena de valor (lotes → pruebas → despachos).[web:23]
+\textbf{¿Cuál usar en trazabilidad?} Siempre \texttt{left} cuando sigues la cadena de valor (lotes → pruebas → despachos).
 
 \begin{lstlisting}[language=Python, caption={Caso HACCP: Pipeline completo de trazabilidad}]
 import pandas as pd
@@ -983,7 +983,7 @@ df.set_index(['id_lote', 'fecha']).join(otra_tabla.set_index(['id_lote', 'fecha'
 
 \subsection{Creación de Columnas Derivadas}
 
-La \textbf{ingeniería de características} (Feature Engineering) convierte datos crudos en variables predictivas útiles. En la industria, esto significa crear KPIs, indicadores de control y variables para Machine Learning.[web:23][web:26]
+La \textbf{ingeniería de características} (Feature Engineering) convierte datos crudos en variables predictivas útiles. En la industria, esto significa crear KPIs, indicadores de control y variables para Machine Learning.
 
 \begin{lstlisting}[language=Python, caption={Feature Engineering para KPIs y predicción}]
 import pandas as pd
