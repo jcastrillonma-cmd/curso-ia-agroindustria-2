@@ -682,85 +682,85 @@ from __future__ import annotations
 
 def validar_sensor_row(row: dict) -> dict:
     """
-    Recibe un registro tipo dict y lo valida.
-    Si algo está mal: lanza ValueError (falla rápido).
-    Si todo está bien: devuelve un dict limpio/normalizado.
+        Recibe un registro tipo dict y lo valida.
+            Si algo está mal: lanza ValueError (falla rápido).
+                Si todo está bien: devuelve un dict limpio/normalizado.
 
-    Formato esperado:
-      {"id": "SENSOR_01", "temp": 24.2, "hum": 55}
-    """
+                    Formato esperado:
+                          {"id": "SENSOR_01", "temp": 24.2, "hum": 55}
+                              """
 
-    # 1) Validar existencia y calidad del ID
-    # Guard clause: si no hay id, no seguimos.
-    if "id" not in row or not str(row["id"]).strip():
-        raise ValueError("Falta 'id' o está vacío.")
+                                  # 1) Validar existencia y calidad del ID
+                                      # Guard clause: si no hay id, no seguimos.
+                                          if "id" not in row or not str(row["id"]).strip():
+                                                  raise ValueError("Falta 'id' o está vacío.")
 
-    # Normalización: quitar espacios y usar mayúsculas
-    sensor_id = str(row["id"]).strip().upper()
+                                                      # Normalización: quitar espacios y usar mayúsculas
+                                                          sensor_id = str(row["id"]).strip().upper()
 
-    # 2) Validar temperatura
-    # Guard clause: debe existir la llave
-    if "temp" not in row:
-        raise ValueError("Falta 'temp' (temperatura).")
+                                                              # 2) Validar temperatura
+                                                                  # Guard clause: debe existir la llave
+                                                                      if "temp" not in row:
+                                                                              raise ValueError("Falta 'temp' (temperatura).")
 
-    # Guard clause: debe ser numérica
-    if not isinstance(row["temp"], (int, float)):
-        raise ValueError("'temp' debe ser numérica (int/float).")
+                                                                                  # Guard clause: debe ser numérica
+                                                                                      if not isinstance(row["temp"], (int, float)):
+                                                                                              raise ValueError("'temp' debe ser numérica (int/float).")
 
-    temp = float(row["temp"])
+                                                                                                  temp = float(row["temp"])
 
-    # Guard clause: rango razonable para sensores agrícolas
-    if temp < -10 or temp > 60:
-        raise ValueError("'temp' fuera de rango [-10, 60].")
+                                                                                                      # Guard clause: rango razonable para sensores agrícolas
+                                                                                                          if temp < -10 or temp > 60:
+                                                                                                                  raise ValueError("'temp' fuera de rango [-10, 60].")
 
-    # 3) Validar humedad
-    if "hum" not in row:
-        raise ValueError("Falta 'hum' (humedad).")
+                                                                                                                      # 3) Validar humedad
+                                                                                                                          if "hum" not in row:
+                                                                                                                                  raise ValueError("Falta 'hum' (humedad).")
 
-    if not isinstance(row["hum"], (int, float)):
-        raise ValueError("'hum' debe ser numérica (int/float).")
+                                                                                                                                      if not isinstance(row["hum"], (int, float)):
+                                                                                                                                              raise ValueError("'hum' debe ser numérica (int/float).")
 
-    hum = float(row["hum"])
+                                                                                                                                                  hum = float(row["hum"])
 
-    if hum < 0 or hum > 100:
-        raise ValueError("'hum' fuera de rango [0, 100].")
+                                                                                                                                                      if hum < 0 or hum > 100:
+                                                                                                                                                              raise ValueError("'hum' fuera de rango [0, 100].")
 
-    # Si llegamos aquí: el registro es válido.
-    # Devolvemos una versión limpia.
-    return {"id": sensor_id, "temp": temp, "hum": hum}
-
-
-def main() -> None:
-    # Dataset simulado: incluye registros válidos e inválidos a propósito.
-    datos = [
-        {"id": "sensor_01", "temp": 24.2, "hum": 55},  # válido
-        {"id": "SENSOR_02", "temp": 25.1, "hum": 56},  # válido
-        {"id": "SENSOR_XX", "temp": 999, "hum": 10},   # inválido (temp)
-        {"id": "", "temp": 23.0, "hum": 50},          # inválido (id)
-        {"id": "SENSOR_03", "temp": "N/A", "hum": 40}, # inválido (tipo temp)
-    ]
-
-    validos = 0
-    motivos = {}
-
-    # Recorremos el dataset, validamos y contamos errores por motivo.
-    for row in datos:
-        try:
-            _ = validar_sensor_row(row)
-            validos += 1
-        except ValueError as e:
-            motivo = str(e)
-            motivos[motivo] = motivos.get(motivo, 0) + 1
-
-    print(f"Validos: {validos}/{len(datos)}")
-    print("Motivos de descarte:")
-    for k, v in sorted(motivos.items(), key=lambda x: x[1], reverse=True):
-        print(f"  - {k}: {v}")
+                                                                                                                                                                  # Si llegamos aquí: el registro es válido.
+                                                                                                                                                                      # Devolvemos una versión limpia.
+                                                                                                                                                                          return {"id": sensor_id, "temp": temp, "hum": hum}
 
 
-if __name__ == "__main__":
-    main()
-\end{lstlisting}
+                                                                                                                                                                          def main() -> None:
+                                                                                                                                                                              # Dataset simulado: incluye registros válidos e inválidos a propósito.
+                                                                                                                                                                                  datos = [
+                                                                                                                                                                                          {"id": "sensor_01", "temp": 24.2, "hum": 55},  # válido
+                                                                                                                                                                                                  {"id": "SENSOR_02", "temp": 25.1, "hum": 56},  # válido
+                                                                                                                                                                                                          {"id": "SENSOR_XX", "temp": 999, "hum": 10},   # inválido (temp)
+                                                                                                                                                                                                                  {"id": "", "temp": 23.0, "hum": 50},          # inválido (id)
+                                                                                                                                                                                                                          {"id": "SENSOR_03", "temp": "N/A", "hum": 40}, # inválido (tipo temp)
+                                                                                                                                                                                                                              ]
+
+                                                                                                                                                                                                                                  validos = 0
+                                                                                                                                                                                                                                      motivos = {}
+
+                                                                                                                                                                                                                                          # Recorremos el dataset, validamos y contamos errores por motivo.
+                                                                                                                                                                                                                                              for row in datos:
+                                                                                                                                                                                                                                                      try:
+                                                                                                                                                                                                                                                                  _ = validar_sensor_row(row)
+                                                                                                                                                                                                                                                                              validos += 1
+                                                                                                                                                                                                                                                                                      except ValueError as e:
+                                                                                                                                                                                                                                                                                                  motivo = str(e)
+                                                                                                                                                                                                                                                                                                              motivos[motivo] = motivos.get(motivo, 0) + 1
+
+                                                                                                                                                                                                                                                                                                                  print(f"Validos: {validos}/{len(datos)}")
+                                                                                                                                                                                                                                                                                                                      print("Motivos de descarte:")
+                                                                                                                                                                                                                                                                                                                          for k, v in sorted(motivos.items(), key=lambda x: x[1], reverse=True):
+                                                                                                                                                                                                                                                                                                                                  print(f"  - {k}: {v}")
+
+
+                                                                                                                                                                                                                                                                                                                                  if __name__ == "__main__":
+                                                                                                                                                                                                                                                                                                                                      main()
+                                                                                                                                                                                                                                                                                                                                      \end{lstlisting}
 
 \begin{agrobox}{Ejercicio 1}
 Modifica el validador para aceptar \texttt{hum} como string numérico (por ejemplo ``"45"``) convirtiéndolo a float, pero seguir rechazando ``"N/A"``.
@@ -787,40 +787,40 @@ import random
 
 def generar_csv_sucio(path: str, n: int = 40) -> None:
     # Semilla para reproducibilidad: mismos datos en cada ejecución
-    random.seed(7)
+        random.seed(7)
 
-    sensores = ["SENSOR_01", "SENSOR_02", "SENSOR_03", "SENSOR_04"]
+            sensores = ["SENSOR_01", "SENSOR_02", "SENSOR_03", "SENSOR_04"]
 
-    # Abrimos el archivo en modo escritura y ponemos header
-    with open(path, "w", encoding="utf-8") as f:
-        f.write("id_sensor,fecha,temperatura,humedad\n")
+                # Abrimos el archivo en modo escritura y ponemos header
+                    with open(path, "w", encoding="utf-8") as f:
+                            f.write("id_sensor,fecha,temperatura,humedad\n")
 
-        for i in range(n):
-            s = random.choice(sensores)
-            fecha = f"2026-01-01 00:{i:02d}:00"
+                                    for i in range(n):
+                                                s = random.choice(sensores)
+                                                            fecha = f"2026-01-01 00:{i:02d}:00"
 
-            # Inyectamos errores en ciertas filas (por índice)
-            if i in (5, 17):
-                temp = "N/A"      # error: no numérico
-            elif i in (8,):
-                temp = 999        # error: imposible
-            else:
-                temp = round(random.uniform(18, 35), 1)
+                                                                        # Inyectamos errores en ciertas filas (por índice)
+                                                                                    if i in (5, 17):
+                                                                                                    temp = "N/A"      # error: no numérico
+                                                                                                                elif i in (8,):
+                                                                                                                                temp = 999        # error: imposible
+                                                                                                                                            else:
+                                                                                                                                                            temp = round(random.uniform(18, 35), 1)
 
-            if i in (3, 22):
-                hum = ""          # error: faltante
-            elif i in (12,):
-                hum = 200         # error: fuera de rango
-            else:
-                hum = random.randint(30, 90)
+                                                                                                                                                                        if i in (3, 22):
+                                                                                                                                                                                        hum = ""          # error: faltante
+                                                                                                                                                                                                    elif i in (12,):
+                                                                                                                                                                                                                    hum = 200         # error: fuera de rango
+                                                                                                                                                                                                                                else:
+                                                                                                                                                                                                                                                hum = random.randint(30, 90)
 
-            # Escribimos la fila al CSV
-            f.write(f"{s},{fecha},{temp},{hum}\n")
+                                                                                                                                                                                                                                                            # Escribimos la fila al CSV
+                                                                                                                                                                                                                                                                        f.write(f"{s},{fecha},{temp},{hum}\n")
 
 
-if __name__ == "__main__":
-    generar_csv_sucio("data/raw/sensores_sucio.csv", n=40)
-    print("OK: generado data/raw/sensores_sucio.csv")
+                                                                                                                                                                                                                                                                        if __name__ == "__main__":
+                                                                                                                                                                                                                                                                            generar_csv_sucio("data/raw/sensores_sucio.csv", n=40)
+                                                                                                                                                                                                                                                                                print("OK: generado data/raw/sensores_sucio.csv")
 \end{lstlisting}
 
 \subsection{Programa 3: Limpiar el CSV (comentado)}
@@ -835,96 +835,96 @@ from __future__ import annotations
 
 def validar_sensor_row(row: dict) -> dict:
     # Reutilizamos el validador (versión corta, misma lógica del Programa 1)
-    if "id" not in row or not str(row["id"]).strip():
-        raise ValueError("Falta 'id' o está vacío.")
+        if "id" not in row or not str(row["id"]).strip():
+                raise ValueError("Falta 'id' o está vacío.")
 
-    sensor_id = str(row["id"]).strip().upper()
+                    sensor_id = str(row["id"]).strip().upper()
 
-    if "temp" not in row:
-        raise ValueError("Falta 'temp'.")
-    if not isinstance(row["temp"], (int, float)):
-        raise ValueError("'temp' debe ser numérica.")
-    temp = float(row["temp"])
-    if temp < -10 or temp > 60:
-        raise ValueError("'temp' fuera de rango [-10, 60].")
+                        if "temp" not in row:
+                                raise ValueError("Falta 'temp'.")
+                                    if not isinstance(row["temp"], (int, float)):
+                                            raise ValueError("'temp' debe ser numérica.")
+                                                temp = float(row["temp"])
+                                                    if temp < -10 or temp > 60:
+                                                            raise ValueError("'temp' fuera de rango [-10, 60].")
 
-    if "hum" not in row:
-        raise ValueError("Falta 'hum'.")
-    if not isinstance(row["hum"], (int, float)):
-        raise ValueError("'hum' debe ser numérica.")
-    hum = float(row["hum"])
-    if hum < 0 or hum > 100:
-        raise ValueError("'hum' fuera de rango [0, 100].")
+                                                                if "hum" not in row:
+                                                                        raise ValueError("Falta 'hum'.")
+                                                                            if not isinstance(row["hum"], (int, float)):
+                                                                                    raise ValueError("'hum' debe ser numérica.")
+                                                                                        hum = float(row["hum"])
+                                                                                            if hum < 0 or hum > 100:
+                                                                                                    raise ValueError("'hum' fuera de rango [0, 100].")
 
-    return {"id": sensor_id, "temp": temp, "hum": hum}
-
-
-def parse_row(linea: str) -> dict:
-    # Convertimos una línea CSV en un dict con tipos correctos
-    parts = linea.strip().split(",")
-    if len(parts) != 4:
-        raise ValueError("Fila corrupta: columnas != 4")
-
-    id_sensor, fecha, temp_str, hum_str = parts
-
-    # Temperatura: detectar faltantes o N/A
-    if temp_str == "" or temp_str.upper() == "N/A":
-        raise ValueError("Temperatura faltante o N/A")
-    temp = float(temp_str)
-
-    # Humedad: detectar faltantes
-    if hum_str == "":
-        raise ValueError("Humedad faltante")
-    hum = float(hum_str)
-
-    # Validación de rangos (fail fast)
-    _ = validar_sensor_row({"id": id_sensor, "temp": temp, "hum": hum})
-
-    # Si pasa: devolvemos un registro con fecha incluida
-    return {"id": id_sensor.strip().upper(), "fecha": fecha, "temp": temp, "hum": hum}
+                                                                                                        return {"id": sensor_id, "temp": temp, "hum": hum}
 
 
-def limpiar_csv(in_path: str, out_path: str, report_path: str) -> None:
-    total = 0
-    validos = 0
-    motivos = {}
+                                                                                                        def parse_row(linea: str) -> dict:
+                                                                                                            # Convertimos una línea CSV en un dict con tipos correctos
+                                                                                                                parts = linea.strip().split(",")
+                                                                                                                    if len(parts) != 4:
+                                                                                                                            raise ValueError("Fila corrupta: columnas != 4")
 
-    # Leemos el CSV de entrada y escribimos uno nuevo (limpio)
-    with open(in_path, "r", encoding="utf-8") as fin, open(out_path, "w", encoding="utf-8") as fout:
-        header = fin.readline().strip()
-        fout.write(header + "\n")
+                                                                                                                                id_sensor, fecha, temp_str, hum_str = parts
 
-        for linea in fin:
-            total += 1
-            try:
-                row = parse_row(linea)
-                fout.write(f"{row['id']},{row['fecha']},{row['temp']},{row['hum']}\n")
-                validos += 1
-            except Exception as e:
-                m = str(e)
-                motivos[m] = motivos.get(m, 0) + 1
+                                                                                                                                    # Temperatura: detectar faltantes o N/A
+                                                                                                                                        if temp_str == "" or temp_str.upper() == "N/A":
+                                                                                                                                                raise ValueError("Temperatura faltante o N/A")
+                                                                                                                                                    temp = float(temp_str)
 
-    # Escribir reporte de limpieza
-    top = sorted(motivos.items(), key=lambda x: x[1], reverse=True)[:3]
-    with open(report_path, "w", encoding="utf-8") as frep:
-        frep.write("=== REPORTE LIMPIEZA CSV ===\n")
-        frep.write(f"Total filas (sin header): {total}\n")
-        frep.write(f"Validas: {validos}\n")
-        frep.write(f"Descartadas: {total - validos}\n\n")
-        frep.write("Top 3 motivos:\n")
-        for motivo, c in top:
-            frep.write(f"- {motivo}: {c}\n")
+                                                                                                                                                        # Humedad: detectar faltantes
+                                                                                                                                                            if hum_str == "":
+                                                                                                                                                                    raise ValueError("Humedad faltante")
+                                                                                                                                                                        hum = float(hum_str)
+
+                                                                                                                                                                            # Validación de rangos (fail fast)
+                                                                                                                                                                                _ = validar_sensor_row({"id": id_sensor, "temp": temp, "hum": hum})
+
+                                                                                                                                                                                    # Si pasa: devolvemos un registro con fecha incluida
+                                                                                                                                                                                        return {"id": id_sensor.strip().upper(), "fecha": fecha, "temp": temp, "hum": hum}
 
 
-if __name__ == "__main__":
-    # Nota: este script asume que el CSV sucio ya existe.
-    # En el taller, primero se ejecuta Programa 2 para generarlo.
-    limpiar_csv(
-        in_path="data/raw/sensores_sucio.csv",
-        out_path="data/processed/sensores_limpio.csv",
-        report_path="reports/reporte_limpieza.txt",
-    )
-    print("OK: generado data/processed/sensores_limpio.csv y reports/reporte_limpieza.txt")
+                                                                                                                                                                                        def limpiar_csv(in_path: str, out_path: str, report_path: str) -> None:
+                                                                                                                                                                                            total = 0
+                                                                                                                                                                                                validos = 0
+                                                                                                                                                                                                    motivos = {}
+
+                                                                                                                                                                                                        # Leemos el CSV de entrada y escribimos uno nuevo (limpio)
+                                                                                                                                                                                                            with open(in_path, "r", encoding="utf-8") as fin, open(out_path, "w", encoding="utf-8") as fout:
+                                                                                                                                                                                                                    header = fin.readline().strip()
+                                                                                                                                                                                                                            fout.write(header + "\n")
+
+                                                                                                                                                                                                                                    for linea in fin:
+                                                                                                                                                                                                                                                total += 1
+                                                                                                                                                                                                                                                            try:
+                                                                                                                                                                                                                                                                            row = parse_row(linea)
+                                                                                                                                                                                                                                                                                            fout.write(f"{row['id']},{row['fecha']},{row['temp']},{row['hum']}\n")
+                                                                                                                                                                                                                                                                                                            validos += 1
+                                                                                                                                                                                                                                                                                                                        except Exception as e:
+                                                                                                                                                                                                                                                                                                                                        m = str(e)
+                                                                                                                                                                                                                                                                                                                                                        motivos[m] = motivos.get(m, 0) + 1
+
+                                                                                                                                                                                                                                                                                                                                                            # Escribir reporte de limpieza
+                                                                                                                                                                                                                                                                                                                                                                top = sorted(motivos.items(), key=lambda x: x[1], reverse=True)[:3]
+                                                                                                                                                                                                                                                                                                                                                                    with open(report_path, "w", encoding="utf-8") as frep:
+                                                                                                                                                                                                                                                                                                                                                                            frep.write("=== REPORTE LIMPIEZA CSV ===\n")
+                                                                                                                                                                                                                                                                                                                                                                                    frep.write(f"Total filas (sin header): {total}\n")
+                                                                                                                                                                                                                                                                                                                                                                                            frep.write(f"Validas: {validos}\n")
+                                                                                                                                                                                                                                                                                                                                                                                                    frep.write(f"Descartadas: {total - validos}\n\n")
+                                                                                                                                                                                                                                                                                                                                                                                                            frep.write("Top 3 motivos:\n")
+                                                                                                                                                                                                                                                                                                                                                                                                                    for motivo, c in top:
+                                                                                                                                                                                                                                                                                                                                                                                                                                frep.write(f"- {motivo}: {c}\n")
+
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                if __name__ == "__main__":
+                                                                                                                                                                                                                                                                                                                                                                                                                                    # Nota: este script asume que el CSV sucio ya existe.
+                                                                                                                                                                                                                                                                                                                                                                                                                                        # En el taller, primero se ejecuta Programa 2 para generarlo.
+                                                                                                                                                                                                                                                                                                                                                                                                                                            limpiar_csv(
+                                                                                                                                                                                                                                                                                                                                                                                                                                                    in_path="data/raw/sensores_sucio.csv",
+                                                                                                                                                                                                                                                                                                                                                                                                                                                            out_path="data/processed/sensores_limpio.csv",
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                    report_path="reports/reporte_limpieza.txt",
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                        )
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            print("OK: generado data/processed/sensores_limpio.csv y reports/reporte_limpieza.txt")
 \end{lstlisting}
 
 \begin{agrobox}{Ejercicio 2}
