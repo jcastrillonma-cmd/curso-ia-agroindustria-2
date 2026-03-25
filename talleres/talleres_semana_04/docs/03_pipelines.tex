@@ -1,0 +1,75 @@
+\subsection{Resultados}
+
+\subsubsection{Entorno de ejecución}
+
+El desarrollo computacional del modelo se realizó utilizando Google Colab, un entorno basado en la nube que permite ejecutar código en Python sin necesidad de instalación local de librerías. Este entorno facilita la reproducibilidad del análisis y el manejo de datos.
+
+\subsubsection{Código implementado}
+
+\begin{lstlisting}
+import pandas as pd
+import numpy as np
+
+from sklearn.pipeline import Pipeline
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression
+
+# Cargar datos
+df = pd.read_csv("02_hacienda_historico_sucio.csv")
+
+# Ver valores faltantes
+print("Valores faltantes:\n")
+print(df.isnull().sum())
+
+# Seleccionar variables
+X = df[["Nitrogeno_kg_ha", "Riego_mm", "Radiacion_Solar_horas"]]
+y = df["Rendimiento_ton_ha"]
+
+# Pipeline
+pipeline = Pipeline([
+    ("imputador", SimpleImputer(strategy="median")),
+    ("escalador", StandardScaler()),
+    ("modelo", LinearRegression())
+])
+
+# Entrenar
+pipeline.fit(X, y)
+
+# Prediccion nueva parcela
+nueva_parcela = [[120, 30, 1800]]
+prediccion = pipeline.predict(nueva_parcela)
+
+print("Prediccion:", prediccion[0])
+\end{lstlisting}
+
+\subsubsection{Resultados obtenidos}
+
+La ejecución del código permitió identificar la presencia de valores faltantes en el dataset:
+
+\begin{itemize}
+    \item Riego: 5 valores faltantes
+    \item Radiación solar: 3 valores faltantes
+\end{itemize}
+
+Además, el modelo generó la siguiente predicción para una nueva parcela:
+
+\begin{itemize}
+    \item Rendimiento estimado: 70.64 ton/ha
+\end{itemize}
+
+\subsubsection{Interpretación}
+
+El pipeline implementado permitió gestionar adecuadamente los valores faltantes presentes en el dataset mediante la imputación con la mediana, evitando la pérdida de información.
+
+El escalado de variables garantizó que todas las variables contribuyeran de manera equilibrada al modelo, evitando sesgos debido a diferencias en magnitud.
+
+La predicción obtenida (70.64 ton/ha) se encuentra dentro del rango esperado de los datos, lo que indica que el modelo es consistente y capaz de generar estimaciones razonables en condiciones reales.
+
+\subsubsection{Análisis crítico}
+
+A diferencia de la Parte 2, donde se trabajó con datos ideales, en esta sección se evidencia la complejidad de los datos reales.
+
+La presencia de valores faltantes y la heterogeneidad en las variables hacen necesario el uso de técnicas de preprocesamiento como la imputación y el escalado.
+
+El uso de pipelines permite integrar estas etapas en un flujo automatizado, lo cual es fundamental en aplicaciones agroindustriales donde los datos provienen de sensores y pueden presentar inconsistencias.

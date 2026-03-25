@@ -1,0 +1,99 @@
+\subsection*{Resultados}
+
+\begin{enumerate}[label=\alph*)]
+
+\item \textbf{Construcción de la matriz de diseño $X$ y el vector de respuesta $Y$}
+
+A partir de los datos experimentales, se construye la matriz de diseño incluyendo una columna de unos para el intercepto:
+
+\[
+X =
+\begin{bmatrix}
+1 & 1 & 2 \\
+1 & 2 & 1 \\
+1 & 2 & 3 \\
+1 & 3 & 2
+\end{bmatrix}
+\]
+
+y el vector de respuesta:
+
+\[
+Y =
+\begin{bmatrix}
+5 \\
+4 \\
+7 \\
+6
+\end{bmatrix}
+\]
+
+\item \textbf{Cálculo de la matriz transpuesta $X^T$}
+
+La matriz transpuesta de $X$ es:
+
+\[
+X^T =
+\begin{bmatrix}
+1 & 1 & 1 & 1 \\
+1 & 2 & 2 & 3 \\
+2 & 1 & 3 & 2
+\end{bmatrix}
+\]
+
+\item \textbf{Cálculo de $(X^T X)$ y $(X^T Y)$}
+
+El producto matricial $X^T X$ es:
+
+\[
+X^T X =
+\begin{bmatrix}
+4 & 8 & 8 \\
+8 & 18 & 16 \\
+8 & 16 & 18
+\end{bmatrix}
+\]
+
+El producto $X^T Y$ es:
+
+\[
+X^T Y =
+\begin{bmatrix}
+22 \\
+47 \\
+45
+\end{bmatrix}
+\]
+
+\item \textbf{Planteamiento del sistema de ecuaciones}
+
+El sistema matricial para estimar los parámetros del modelo es:
+
+\[
+(X^T X)\hat{\beta} = X^T Y
+\]
+
+Sustituyendo los valores obtenidos:
+
+\[
+\begin{bmatrix}
+4 & 8 & 8 \\
+8 & 18 & 16 \\
+8 & 16 & 18
+\end{bmatrix}
+\begin{bmatrix}
+\beta_0 \\
+\beta_1 \\
+\beta_2
+\end{bmatrix}
+=
+\begin{bmatrix}
+22 \\
+47 \\
+45
+\end{bmatrix}
+\]
+
+Este sistema permite determinar los coeficientes del modelo de regresión lineal múltiple.
+
+\end{enumerate}

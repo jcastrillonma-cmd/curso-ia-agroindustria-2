@@ -1,0 +1,116 @@
+\section{Caso de estudio: Modelado del proceso de secado de café}
+
+\subsection{Planteamiento del problema}
+
+El secado del café es una etapa crítica en la agroindustria, ya que influye directamente en la calidad final del grano, el tiempo de procesamiento y el consumo energético.
+
+Variables como la temperatura del aire y la humedad relativa afectan la cinética de secado, el contenido final de humedad y el perfil sensorial del café. Sin embargo, estas relaciones no siempre son evidentes, lo que hace necesario el uso de herramientas estadísticas y modelos predictivos.
+
+El objetivo de este estudio es analizar la influencia de variables de proceso sobre la cinética de secado y la calidad del café, mediante el uso de análisis estadístico y modelos de regresión.
+
+\subsection{Variables del estudio}
+
+Se definieron las siguientes variables:
+
+\begin{itemize}
+    \item Variables independientes:
+    \begin{itemize}
+        \item Temperatura del aire de secado ($^\circ$C)
+        \item Humedad relativa (\%)
+    \end{itemize}
+    
+    \item Variables de respuesta:
+    \begin{itemize}
+        \item Contenido de humedad del grano (\%)
+        \item Tiempo de secado (h)
+        \item Calidad sensorial (puntaje)
+    \end{itemize}
+\end{itemize}
+
+\subsection{Diseño experimental}
+
+Se propone un diseño factorial donde se evalúan diferentes niveles de temperatura y humedad relativa.
+
+Este diseño permite aplicar análisis de varianza (ANOVA) para determinar si existen diferencias significativas entre los tratamientos evaluados.
+
+\subsection{Análisis estadístico}
+
+El análisis de varianza (ANOVA) permite determinar si las variables de proceso generan diferencias significativas en la calidad del café.
+
+En caso de encontrar diferencias significativas, se aplica la prueba de Tukey para identificar específicamente entre qué tratamientos existen dichas diferencias.
+
+Este enfoque permite validar experimentalmente los resultados obtenidos.
+
+\subsection{Modelo de regresión}
+
+Se propone un modelo de regresión lineal múltiple para cuantificar la relación entre las variables de proceso y las variables de respuesta:
+
+\[
+y = \beta_0 + \beta_1 T + \beta_2 HR + \epsilon
+\]
+
+donde:
+
+\begin{itemize}
+    \item $T$: temperatura
+    \item $HR$: humedad relativa
+    \item $y$: variable de respuesta
+\end{itemize}
+
+\subsection{Pipeline de procesamiento de datos}
+
+En escenarios reales, los datos pueden presentar valores faltantes o inconsistencias debido a fallas en sensores o condiciones experimentales.
+
+Por esta razón, se propone el uso de un pipeline que integre:
+
+\begin{itemize}
+    \item Imputación de datos faltantes
+    \item Escalado de variables
+    \item Modelo de regresión
+\end{itemize}
+
+Esto permite automatizar el análisis y garantizar la robustez del modelo.
+
+\subsection{Ejemplo de implementación}
+
+\begin{lstlisting}
+import pandas as pd
+from sklearn.pipeline import Pipeline
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression
+
+# Datos simulados
+df = pd.DataFrame({
+    "Temperatura": [40, 40, 50, 50],
+    "Humedad": [50, 60, 50, 60],
+    "Calidad": [80, 75, 85, 78]
+})
+
+X = df[["Temperatura", "Humedad"]]
+y = df["Calidad"]
+
+pipeline = Pipeline([
+    ("imputador", SimpleImputer(strategy="median")),
+    ("escalador", StandardScaler()),
+    ("modelo", LinearRegression())
+])
+
+pipeline.fit(X, y)
+
+pred = pipeline.predict([[45, 55]])
+print(pred)
+\end{lstlisting}
+
+\subsection{Integración metodológica}
+
+El enfoque propuesto combina herramientas estadísticas y de aprendizaje automático:
+
+\begin{itemize}
+    \item ANOVA: Validación de diferencias entre tratamientos
+    \item Tukey: Comparación entre grupos específicos
+    \item Regresión: Modelado de relaciones entre variables
+    \item Pipeline: Automatización del procesamiento de datos
+\end{itemize}
+
+Esta integración permite desarrollar modelos robustos que no solo explican el fenómeno, sino que también permiten realizar predicciones en condiciones reales.

@@ -1,0 +1,73 @@
+\subsection{Resultados}
+\subsubsection{Entorno de ejecución}
+
+El desarrollo computacional del modelo se realizó utilizando Google Colab, un entorno basado en la nube que permite ejecutar código en Python sin necesidad de instalación local de librerías. Este entorno facilita la reproducibilidad del análisis y el manejo de datos.
+
+
+\subsubsection{Código implementado}
+
+\begin{lstlisting}
+import pandas as pd
+import numpy as np
+
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+
+# Cargar datos
+df = pd.read_csv("01_micro_experimento_limpio.csv")
+
+# Ver columnas
+print("Columnas:", df.columns)
+
+# Separar variables
+X = df[["Nitrogeno_kg_ha", "Potasio_kg_ha"]]
+y = df["Rendimiento_ton_ha"]
+
+# Modelo
+modelo = LinearRegression()
+modelo.fit(X, y)
+
+# Resultados
+print("\nIntercepto:", modelo.intercept_)
+print("Coeficientes:", modelo.coef_)
+
+# Prediccion
+y_pred = modelo.predict(X)
+
+# Mdtricas
+mae = mean_absolute_error(y, y_pred)
+rmse = np.sqrt(mean_squared_error(y, y_pred))
+r2 = r2_score(y, y_pred)
+
+print("\nMAE:", mae)
+print("RMSE:", rmse)
+print("R2:", r2)
+\end{lstlisting}
+
+\subsubsection{Resultados obtenidos}
+
+La ejecución del código generó los siguientes resultados:
+
+\begin{itemize}
+    \item Intercepto: 11.46
+    \item Coeficientes: [0.34, 0.24]
+    \item MAE: 0.41
+    \item RMSE: 0.49
+    \item $R^2$: 0.998
+\end{itemize}
+
+\subsubsection{Interpretación}
+
+El modelo de regresión lineal múltiple presenta un excelente desempeño, con un coeficiente de determinación $R^2$ de 0.998, lo que indica que el 99.8\% de la variabilidad del rendimiento es explicada por las variables independientes.
+
+El coeficiente asociado al nitrógeno (0.34) indica que por cada incremento de 1 kg/ha en la dosis aplicada, el rendimiento aumenta en promedio 0.34 ton/ha. De manera similar, el potasio presenta un efecto positivo de 0.24 ton/ha por unidad.
+
+Se evidencia que el nitrógeno tiene una mayor influencia sobre el rendimiento en comparación con el potasio en las condiciones evaluadas.
+
+Las métricas de error (MAE = 0.41 y RMSE = 0.49) indican una alta precisión del modelo, con errores bajos en las predicciones.
+
+\subsubsection{Análisis crítico}
+
+Aunque el modelo presenta un ajuste casi perfecto, esto se debe a que el dataset utilizado corresponde a condiciones ideales, sin presencia de ruido o valores faltantes.
+
+En escenarios reales, es común encontrar inconsistencias en los datos, lo cual puede afectar el desempeño del modelo. Por esta razón, en la siguiente sección se implementa un pipeline de procesamiento de datos que permite abordar estas limitaciones.
