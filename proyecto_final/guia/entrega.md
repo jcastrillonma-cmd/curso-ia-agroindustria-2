@@ -16,6 +16,8 @@ El repositorio de GitHub del estudiante deberá contener como mínimo:
 4. El archivo PDF compilado del informe.
 5. Los resultados obtenidos.
 6. Las instrucciones necesarias para ejecutar el proyecto.
+7. Evidencia del componente tabular.
+8. Evidencia del componente de clasificación de imágenes.
 
 ## Estructura mínima sugerida
 
@@ -26,12 +28,15 @@ proyecto_final_estudiante/
 │   ├── main.tex
 │   └── main.pdf
 ├── src/
-│   └── codigo_fuente.py
+│   ├── tabular/
+│   │   └── modelo_tabular.py
+│   └── imagenes/
+│       └── modelo_imagenes.py
 ├── data/
 │   └── descripcion.txt
 └── results/
-    ├── figuras/
-    └── metricas.txt
+    ├── tabular/
+    └── imagenes/
 ```
 
 ## Contenido mínimo del README.md
@@ -40,8 +45,9 @@ El archivo `README.md` del repositorio del estudiante deberá incluir:
 
 - título del proyecto,
 - nombre del estudiante,
-- modalidad elegida (tabular o imágenes),
 - descripción breve del problema,
+- descripción del componente tabular,
+- descripción del componente de imágenes,
 - tecnologías utilizadas,
 - instrucciones de ejecución,
 - resumen breve de resultados.
@@ -66,7 +72,8 @@ El informe deberá estar escrito en LaTeX y compilado a PDF. Como mínimo, deber
 - El programa debe estar implementado en **PyTorch** o **TensorFlow**.
 - El código debe ejecutarse de manera reproducible.
 - El informe debe estar en formato **LaTeX** y su correspondiente **PDF** debe estar incluido en el repositorio.
-- El estudiante debe trabajar con uno de los datasets oficiales del curso.
+- El estudiante debe trabajar con los datasets oficiales del curso.
+- El estudiante debe desarrollar los dos componentes obligatorios del proyecto final.
 
 ## Recomendaciones
 
@@ -79,4 +86,3 @@ El informe deberá estar escrito en LaTeX y compilado a PDF. Como mínimo, deber
 ## Observación final
 
 El repositorio del estudiante constituye la evidencia principal de entrega del proyecto final.
-

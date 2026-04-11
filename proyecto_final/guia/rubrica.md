@@ -4,42 +4,30 @@
 
 | Criterio | Porcentaje |
 |---|---:|
-| Comprensión del problema | 10% |
-| Explicación matemática del método | 15% |
-| Explicación conceptual del funcionamiento | 10% |
-| Ejemplo o ejercicio de apoyo | 10% |
-| Implementación en PyTorch o TensorFlow | 20% |
+| Desarrollo de los problemas finales | 50% |
+| Comprensión y explicación del método | 20% |
 | Resultados y evaluación | 15% |
-| Organización del repositorio en GitHub | 10% |
-| Calidad del informe en LaTeX y PDF | 10% |
+| Entrega técnica del repositorio e informe | 15% |
 
 ## Descripción de los criterios
 
-### 1. Comprensión del problema
-Se evalúa si el estudiante identifica correctamente el problema y entiende el dataset utilizado.
+### 1. Desarrollo de los problemas finales
+Se evalúa el desarrollo efectivo de los dos componentes obligatorios del proyecto:
 
-### 2. Explicación matemática del método
-Se evalúa si el estudiante presenta de forma clara la base matemática esencial del método utilizado.
+- componente de clasificación tabular,
+- componente de clasificación de imágenes.
 
-### 3. Explicación conceptual del funcionamiento
-Se evalúa si el estudiante explica adecuadamente cómo funciona el modelo y cómo produce sus resultados.
+Se valorará especialmente que las soluciones sean funcionales, coherentes con el problema y correctamente implementadas.
 
-### 4. Ejemplo o ejercicio de apoyo
-Se evalúa si el estudiante incluye un ejemplo trabajado, una prueba o un ejercicio breve que apoye la comprensión del método.
+### 2. Comprensión y explicación del método
+Se evalúa si el estudiante demuestra comprensión básica del método utilizado y si logra explicarlo de forma matemática y conceptual con claridad.
 
-### 5. Implementación en PyTorch o TensorFlow
-Se evalúa si el código está correctamente desarrollado, si funciona y si usa una de las tecnologías exigidas.
+### 3. Resultados y evaluación
+Se evalúa la presentación de resultados, métricas, ejemplos y una interpretación breve de los desempeños obtenidos.
 
-### 6. Resultados y evaluación
-Se evalúa la presentación de resultados, métricas, ejemplos de clasificación o predicción y una discusión breve.
-
-### 7. Organización del repositorio en GitHub
-Se evalúa la claridad del repositorio del estudiante, la estructura de carpetas, el README y la presencia de los archivos esperados.
-
-### 8. Calidad del informe en LaTeX y PDF
-Se evalúa la redacción, la estructura, la presentación técnica y la inclusión del PDF compilado.
+### 4. Entrega técnica del repositorio e informe
+Se evalúa la organización del repositorio en GitHub, la presencia del código, el README, el desarrollo en LaTeX y el PDF compilado.
 
 ## Observación
 
-Se valorará más la claridad, la comprensión y la reproducibilidad que la complejidad del modelo.
-
+Se valorará más la claridad, el desarrollo correcto del proyecto y la reproducibilidad que la complejidad del modelo.

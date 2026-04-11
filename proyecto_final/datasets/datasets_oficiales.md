@@ -1,46 +1,82 @@
 # Datasets oficiales del proyecto final
 
+En el proyecto final, **cada estudiante deberá desarrollar dos componentes obligatorios**:
+
+1. un componente de clasificación tabular,
+2. un componente de clasificación de imágenes.
+
+Por tanto, los dos datasets oficiales del curso deben ser utilizados en el desarrollo del trabajo final.
+
+---
+
 ## 1. Dataset tabular
 
-### Archivo base
-`phpnThNfi.arff`
+### Ubicación en el repositorio
+
+```text
+data/proyecto_final/tabular/phpnThNfi.arff
+```
 
 ### Tipo de problema
+
 Clasificación binaria.
 
 ### Descripción general
-Este dataset contiene 5 variables numéricas y una variable objetivo llamada `Class`, con dos clases.
 
-### Observaciones
-- Es el dataset oficial para la modalidad tabular.
-- Será suministrado por el profesor.
-- Se espera que el estudiante realice lectura, preprocesamiento, entrenamiento y evaluación.
+Este dataset contiene:
+
+- 5 variables numéricas de entrada,
+- 1 variable objetivo llamada `Class`.
+
+### Uso esperado
+
+El estudiante deberá usar este dataset para construir un modelo de clasificación tabular, explicando:
+
+- el problema,
+- la base matemática del método,
+- el funcionamiento general del modelo,
+- un ejemplo o ejercicio de apoyo,
+- la implementación en PyTorch o TensorFlow,
+- los resultados obtenidos.
 
 ---
 
 ## 2. Dataset de imágenes
 
-### Dataset base
-PlantVillage
+### Ubicación en el repositorio
 
-### Subconjunto seleccionado para el curso
-Se utilizará únicamente el subconjunto asociado a papa, con tres clases:
+```text
+data/proyecto_final/imagenes/potato_subset/
+```
+
+### Tipo de problema
+
+Clasificación de imágenes.
+
+### Clases del subconjunto
 
 - `Potato___Early_blight`
 - `Potato___healthy`
 - `Potato___Late_blight`
 
-### Estructura general
-El subconjunto del curso fue balanceado para facilitar el desarrollo del proyecto en el tiempo disponible.
+### Descripción general
 
-### Observaciones
-- No se usará el dataset completo.
-- El subconjunto será preparado y suministrado por el profesor.
-- Se espera que el estudiante construya un clasificador de imágenes sencillo con PyTorch o TensorFlow.
+Este subconjunto fue construido a partir del dataset PlantVillage y reducido para que el desarrollo del proyecto sea manejable en tiempo, tamaño y dificultad.
+
+### Uso esperado
+
+El estudiante deberá usar este subconjunto para construir un clasificador de imágenes, explicando:
+
+- el problema,
+- la base matemática del método,
+- el funcionamiento general del modelo,
+- un ejemplo o ejercicio de apoyo,
+- la implementación en PyTorch o TensorFlow,
+- los resultados obtenidos.
 
 ---
 
-## Nota general
+## Observación general
 
-Los estudiantes deberán usar únicamente los datasets oficiales del curso, con el fin de garantizar comparabilidad, reproducibilidad y un alcance adecuado.
+Los estudiantes deben trabajar únicamente con los datasets oficiales del curso y desarrollar **ambos componentes** dentro de un mismo proyecto final.
 

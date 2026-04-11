@@ -1,152 +1,136 @@
 # Proyecto final
 
-En esta carpeta se encuentra toda la información necesaria para desarrollar el proyecto final del curso de **Inteligencia Artificial para Agroindustria**.
+En esta carpeta se encuentra la guía general del proyecto final del curso de **Inteligencia Artificial para Agroindustria**.
 
-Este `README.md` es el punto de entrada principal. Aquí se describe la ruta de trabajo, el objetivo del proyecto, los documentos que se deben leer y los datasets oficiales que se utilizarán.
+El proyecto final es un trabajo **integrado**. Cada estudiante deberá desarrollar **dos componentes obligatorios** dentro de un mismo proyecto:
+
+1. un componente de clasificación tabular,
+2. un componente de clasificación de imágenes.
+
+No se debe escoger una modalidad única. Se deben desarrollar **ambas partes**.
 
 ---
 
-## Objetivo del proyecto
+## Objetivo general
 
-El proyecto final tiene como objetivo que el estudiante desarrolle un ejercicio aplicado de inteligencia artificial, a partir de uno de los datasets oficiales del curso, integrando:
+El objetivo del proyecto final es que el estudiante desarrolle un trabajo aplicado de inteligencia artificial usando los **dos datasets oficiales del curso**, integrando:
 
 - comprensión del problema,
 - explicación matemática básica del método,
 - explicación conceptual del funcionamiento,
 - ejemplo o ejercicio de apoyo,
-- implementación del modelo en **PyTorch** o **TensorFlow**,
+- implementación en **PyTorch** o **TensorFlow**,
 - documentación técnica en **LaTeX**,
-- compilación final del informe en **PDF**.
-
-No se busca únicamente entrenar un modelo, sino desarrollar un trabajo técnico, comprensible, reproducible y bien documentado.
-
----
-
-## Ruta de trabajo
-
-El estudiante debe seguir esta ruta dentro de la carpeta `proyecto_final/`:
-
-### 1. Leer el enunciado general
-Entrar a:
-
-```text
-proyecto_final/guia/enunciado_proyecto_final.md
-```
-
-En este archivo se encuentra la descripción general del proyecto, las modalidades disponibles, el enfoque del trabajo y los requisitos mínimos.
-
-### 2. Leer la guía de entrega
-Entrar a:
-
-```text
-proyecto_final/guia/entrega.md
-```
-
-En este archivo se explica cómo se debe realizar la entrega, qué debe contener el repositorio del estudiante en GitHub y qué archivos mínimos deben presentarse.
-
-### 3. Revisar la rúbrica
-Entrar a:
-
-```text
-proyecto_final/guia/rubrica.md
-```
-
-En este archivo se encuentran los criterios de evaluación del proyecto final.
-
-### 4. Revisar los datasets oficiales
-Entrar a:
-
-```text
-proyecto_final/datasets/
-```
-
-En esta carpeta se describe la información de los datasets oficiales del curso, tanto para la modalidad tabular como para la modalidad de imágenes.
-
-### 5. Revisar los materiales de apoyo
-Entrar a:
-
-```text
-proyecto_final/asignacion/
-```
-
-En esta carpeta se ubicarán notas técnicas, archivos base y otros materiales de apoyo para el desarrollo del proyecto.
+- compilación final en **PDF**,
+- entrega en el **GitHub del estudiante**.
 
 ---
 
-## Qué se busca en el proyecto
+## Componentes obligatorios
 
-Se espera que el estudiante:
+### 1. Componente tabular
 
-1. Comprenda el problema asignado.
-2. Trabaje con uno de los datasets oficiales del curso.
-3. Explique de forma breve la base matemática del método usado.
-4. Explique conceptualmente cómo funciona el modelo.
-5. Presente un ejemplo, ejercicio o ilustración de apoyo.
-6. Desarrolle un programa funcional en **PyTorch** o **TensorFlow**.
-7. Documente todo el trabajo en **LaTeX**.
-8. Compile el documento final en **PDF**.
-9. Suba su trabajo al **GitHub del estudiante**.
+El estudiante deberá trabajar con el dataset tabular oficial del curso y desarrollar un modelo de clasificación.
 
----
+### 2. Componente de imágenes
 
-## Modalidades del proyecto
+El estudiante deberá trabajar con el subconjunto oficial de imágenes de hojas de papa y desarrollar un modelo de clasificación de imágenes.
 
-Cada estudiante deberá escoger una de las siguientes modalidades:
+En ambos componentes el estudiante deberá:
 
-### Modalidad 1. Clasificación tabular
-Consiste en trabajar con un dataset tabular oficial del curso y desarrollar un modelo de clasificación.
-
-### Modalidad 2. Clasificación de imágenes
-Consiste en trabajar con un subconjunto oficial del dataset PlantVillage, usando imágenes de hojas de papa para clasificación.
+- estudiar el método utilizado,
+- explicar brevemente su base matemática,
+- explicar cómo funciona,
+- presentar un ejemplo o ejercicio de apoyo,
+- implementar el modelo,
+- entrenarlo y evaluarlo,
+- analizar los resultados obtenidos.
 
 ---
 
-## Datasets oficiales
+## Ubicación de los datasets oficiales
 
-Los datasets oficiales del curso están descritos en:
+Los datasets oficiales del proyecto final están ubicados en las siguientes rutas del repositorio:
+
+### Dataset tabular
+
+```text
+data/proyecto_final/tabular/phpnThNfi.arff
+```
+
+### Dataset de imágenes
+
+```text
+data/proyecto_final/imagenes/potato_subset/
+```
+
+La descripción general de ambos datasets está en:
 
 ```text
 proyecto_final/datasets/datasets_oficiales.md
 ```
 
-### Dataset tabular
-Ubicación de referencia:
+---
 
-```text
-proyecto_final/datasets/tabular/
-```
+## Temáticas mínimas a estudiar
 
-Incluye:
+Para desarrollar correctamente el proyecto final, el estudiante deberá estudiar como mínimo los siguientes temas.
 
-- un archivo `README.md`,
-- un archivo `ejemplo_tabular.csv` para ilustrar el formato de los datos.
+### Para el componente tabular
 
-### Dataset de imágenes
-Ubicación de referencia:
+- clasificación supervisada,
+- variables de entrada y variable objetivo,
+- partición de datos en entrenamiento y prueba,
+- función de pérdida,
+- métricas básicas de clasificación,
+- implementación de modelos en **PyTorch** o **TensorFlow**.
 
-```text
-proyecto_final/datasets/imagenes/
-```
+### Para el componente de imágenes
 
-Incluye:
+- representación de imágenes como tensores,
+- clasificación supervisada de imágenes,
+- preprocesamiento básico de imágenes,
+- entrenamiento y evaluación de modelos,
+- métricas básicas de clasificación,
+- implementación de modelos en **PyTorch** o **TensorFlow**.
 
-- un archivo `README.md`,
-- un archivo `potato_subset.md` con la descripción del subconjunto seleccionado.
+### Para el informe y la entrega
+
+- estructura básica de un informe técnico,
+- redacción del proyecto en **LaTeX**,
+- compilación del informe a **PDF**,
+- organización del repositorio en **GitHub**,
+- instrucciones de ejecución y reproducibilidad.
 
 ---
 
-## Entrega
+## Qué debe entregar el estudiante
 
-La entrega final debe realizarse en el **repositorio personal de GitHub del estudiante**.
+La entrega final deberá realizarse en el **repositorio personal de GitHub del estudiante**.
 
-Ese repositorio debe contener como mínimo:
+Ese repositorio deberá contener:
 
-- código fuente,
-- documento en LaTeX,
+- código fuente del componente tabular,
+- código fuente del componente de imágenes,
+- documento del proyecto en LaTeX,
 - PDF compilado,
 - `README.md`,
 - resultados,
 - instrucciones de ejecución.
+
+---
+
+## Ruta de trabajo recomendada
+
+Se recomienda seguir esta ruta dentro de `proyecto_final/`:
+
+1. Leer `guia/enunciado_proyecto_final.md`
+2. Leer `guia/entrega.md`
+3. Leer `guia/rubrica.md`
+4. Leer `datasets/datasets_oficiales.md`
+5. Revisar `asignacion/README.md`
+6. Revisar `asignacion/notas_tecnicas.md`
+7. Ubicar los datasets oficiales en `data/proyecto_final/`
 
 ---
 
@@ -161,13 +145,7 @@ proyecto_final/
 │   └── rubrica.md
 ├── datasets/
 │   ├── README.md
-│   ├── datasets_oficiales.md
-│   ├── tabular/
-│   │   ├── README.md
-│   │   └── ejemplo_tabular.csv
-│   └── imagenes/
-│       ├── README.md
-│       └── potato_subset.md
+│   └── datasets_oficiales.md
 └── asignacion/
     ├── README.md
     └── notas_tecnicas.md
@@ -175,7 +153,6 @@ proyecto_final/
 
 ---
 
-## Recomendación final
+## Observación final
 
-Antes de comenzar a programar, el estudiante debe leer completamente los archivos de la carpeta `guia/` y revisar la modalidad de dataset que haya escogido.
-
+El estudiante debe trabajar únicamente con los datasets oficiales del curso y desarrollar **los dos componentes obligatorios** dentro del mismo proyecto final.
