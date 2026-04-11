@@ -2,87 +2,30 @@
 
 ## Forma de entrega
 
-La entrega final deberá realizarse **exclusivamente en el GitHub del estudiante**.
+La entrega final deberá realizarse exclusivamente en el repositorio personal de GitHub del estudiante.
 
-Cada estudiante deberá crear o usar un repositorio propio de GitHub para desarrollar y entregar su proyecto final. No se aceptará una entrega separada por fuera de ese repositorio, salvo que el profesor indique lo contrario.
+## Archivos mínimos requeridos
 
-## Qué debe estar en el repositorio del estudiante
+El repositorio deberá incluir como mínimo:
 
-El repositorio de GitHub del estudiante deberá contener como mínimo:
-
-1. Un archivo `README.md`.
-2. El código fuente del proyecto.
-3. El desarrollo del documento en LaTeX.
-4. El archivo PDF compilado del informe.
-5. Los resultados obtenidos.
-6. Las instrucciones necesarias para ejecutar el proyecto.
-7. Evidencia del componente tabular.
-8. Evidencia del componente de clasificación de imágenes.
-
-## Estructura mínima sugerida
-
-```text
-proyecto_final_estudiante/
-├── README.md
-├── informe/
-│   ├── main.tex
-│   └── main.pdf
-├── src/
-│   ├── tabular/
-│   │   └── modelo_tabular.py
-│   └── imagenes/
-│       └── modelo_imagenes.py
-├── data/
-│   └── descripcion.txt
-└── results/
-    ├── tabular/
-    └── imagenes/
-```
-
-## Contenido mínimo del README.md
-
-El archivo `README.md` del repositorio del estudiante deberá incluir:
-
-- título del proyecto,
-- nombre del estudiante,
-- descripción breve del problema,
-- descripción del componente tabular,
-- descripción del componente de imágenes,
-- tecnologías utilizadas,
-- instrucciones de ejecución,
-- resumen breve de resultados.
-
-## Contenido mínimo del informe en LaTeX
-
-El informe deberá estar escrito en LaTeX y compilado a PDF. Como mínimo, deberá contener:
-
-- título,
-- introducción,
-- descripción del problema,
-- explicación matemática breve,
-- explicación conceptual del método,
-- ejemplo o ejercicio de apoyo,
-- metodología,
-- resultados,
-- discusión breve,
-- conclusiones.
+- `README.md`
+- código del componente tabular,
+- código del componente de imágenes,
+- informe en LaTeX,
+- PDF compilado del informe,
+- resultados obtenidos,
+- instrucciones de ejecución.
 
 ## Requisitos técnicos
 
-- El programa debe estar implementado en **PyTorch** o **TensorFlow**.
-- El código debe ejecutarse de manera reproducible.
-- El informe debe estar en formato **LaTeX** y su correspondiente **PDF** debe estar incluido en el repositorio.
-- El estudiante debe trabajar con los datasets oficiales del curso.
-- El estudiante debe desarrollar los dos componentes obligatorios del proyecto final.
+El proyecto deberá cumplir con lo siguiente:
 
-## Recomendaciones
-
-- Usar nombres de archivos claros.
-- Mantener una estructura ordenada de carpetas.
-- Evitar subir archivos innecesarios.
-- Explicar de forma breve cómo ejecutar el código.
-- Verificar que el PDF final sí esté presente en el repositorio.
+- desarrollar el componente tabular,
+- desarrollar el componente de imágenes,
+- implementar las soluciones en **PyTorch** o **TensorFlow**,
+- organizar el repositorio de forma clara,
+- permitir la revisión básica del trabajo.
 
 ## Observación final
 
-El repositorio del estudiante constituye la evidencia principal de entrega del proyecto final.
+El repositorio de GitHub constituye la evidencia oficial de entrega del proyecto final.
