@@ -1,0 +1,136 @@
+\documentclass{article}
+
+% ==================== PAQUETES ====================
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{xcolor}
+
+% ==================== METADATOS ====================
+\title{Resumen: IA y Visión en la Agroindustria}
+\author{John Jairo Leal Gómez}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Este manual presenta una introducción sencilla a los conceptos de entropía e información mutua aplicados a la clasificación de calidad en productos agrícolas. Se enfoca en la intuición matemática y ejemplos prácticos para facilitar su implementación en sistemas de visión artificial.
+\end{abstract}
+% ====================================================
+% SECCIÓN: INCERTIDUMBRE (ENTROPÍA)
+% ====================================================
+\section{La Incertidumbre: Concepto de Entropía}
+
+\subsection{Concepto Intuitivo}
+La \textbf{Entropía} es una medida de la ``sorpresa'' o el desorden en un conjunto de datos. En el contexto de la agroindustria, nos indica qué tan difícil es predecir si el siguiente fruto en la banda transportadora estará \textbf{Sano} o \textbf{Defectuoso}.
+
+\begin{itemize}
+    \item \textbf{Baja Entropía:} Si sabemos que el 99\% de la cosecha es excelente, no hay ``sorpresa''; casi siempre acertaremos diciendo que está sana. Hay poca incertidumbre.
+    \item \textbf{Alta Entropía:} Si el lote está muy mezclado (50\% sano y 50\% defectuoso), la incertidumbre es máxima. No tenemos idea de qué saldrá a continuación.
+\end{itemize}
+
+
+
+\subsection{Definición Matemática}
+Para una variable aleatoria discreta $Y$ (la clase del fruto), con posibles resultados $y_1, y_2, \dots, y_n$, la entropía $H(Y)$ se define como:
+
+\[ H(Y) = - \sum_{i=1}^{n} P(y_i) \log_2 P(y_i) \]
+
+Donde:
+\begin{itemize}
+    \item $P(y_i)$ es la probabilidad de que ocurra la clase $i$.
+    \item El resultado se mide en \textbf{bits}.
+    \item El signo negativo asegura que la entropía sea siempre positiva (ya que el logaritmo de una probabilidad es negativo).
+\end{itemize}
+
+\subsection{Ejemplo de Aplicación: Clasificación de Mangos}
+Supongamos que estamos inspeccionando un lote de 100 mangos en una planta de empaque.
+
+\textbf{Escenario:} Tenemos 80 mangos \textbf{Sanos} (S) y 20 mangos \textbf{Defectuosos} (D).
+\begin{enumerate}
+    \item Calcular las probabilidades:
+    \[ P(S) = \frac{80}{100} = 0.8, \quad P(D) = \frac{20}{100} = 0.2 \]
+
+    \item Aplicar la fórmula:
+    \[ H(Y) = - [ (0.8 \cdot \log_2 0.8) + (0.2 \cdot \log_2 0.2) ] \]
+
+    \item Resolviendo:
+    \[ H(Y) \approx - [ (0.8 \cdot -0.322) + (0.2 \cdot -2.322) ] \]
+    \[ H(Y) \approx - [ -0.257 - 0.464 ] = \mathbf{0.721 \text{ bits}} \]
+\end{enumerate}
+
+\textbf{Interpretación:} Como el valor es menor a 1 (que sería el máximo para dos clases), significa que el sistema ya tiene cierta ``certeza'' de encontrar frutos sanos. Si logramos que una cámara detecte manchas y reduzca este valor, estaremos extrayendo información útil para el proceso.
+
+
+% ====================================================
+% SECCIÓN: INFORMACIÓN MUTUA
+% ====================================================
+\section{Selección de Variables: Información Mutua}
+
+\subsection{Concepto Intuitivo}
+La \textbf{Información Mutua} ($I$) mide cuánta información comparten dos variables. En nuestro caso, queremos saber cuánto ``nos dice'' una característica visual (como el color o el tamaño de una mancha) sobre la salud del fruto.
+
+Es la herramienta perfecta para la \textbf{selección de variables}: si una característica tiene una información mutua alta con la clase (sano/defectuoso), es una variable excelente para nuestro modelo. Si es cercana a cero, es ruido que solo hará el programa más lento.
+
+
+
+\subsection{Definición Matemática}
+La información mutua se define como la reducción de la incertidumbre (entropía) de la clase $Y$ después de observar la característica $X$:
+
+\[ I(X;Y) = H(Y) - H(Y|X) \]
+
+Donde:
+\begin{itemize}
+    \item $H(Y)$ es la entropía inicial de la fruta (incertidumbre total).
+    \item $H(Y|X)$ es la \textbf{entropía condicional}: la incertidumbre que queda después de haber medido la variable $X$.
+\end{itemize}
+
+\subsection{Ejemplo de Aplicación: ¿Color o Tamaño?}
+Supongamos que queremos decidir qué sensor comprar: uno que mide el \textbf{Color} o uno que mide la \textbf{Rugosidad}.
+
+\textbf{Paso 1: Entropía Inicial} \\
+Partimos de un lote con $H(Y) = 0.72$ bits (del ejemplo anterior).
+
+\textbf{Paso 2: Evaluación del ``Color''} \\
+Al usar el sensor de color, la incertidumbre que queda sobre si la fruta está dañada es muy poca, digamos $H(Y|\text{Color}) = 0.12$ bits.
+\[ I(\text{Color};Y) = 0.72 - 0.12 = \mathbf{0.60 \text{ bits}} \]
+
+\textbf{Paso 3: Evaluación del ``Brillo''} \\
+Al usar el sensor de brillo, la incertidumbre apenas baja, $H(Y|\text{Brillo}) = 0.68$ bits.
+\[ I(\text{Brillo};Y) = 0.72 - 0.68 = \mathbf{0.04 \text{ bits}} \]
+
+\textbf{Interpretación para el desarrollo:} \\
+Como $I(\text{Color};Y) > I(\text{Brillo};Y)$, el programador debe elegir el sensor o el algoritmo de color. El brillo aporta casi un 0\% de información útil para resolver el problema, mientras que el color resuelve casi toda la incertidumbre.
+
+\subsection{Ejercicio de Reflexión}
+Si una variable $X$ fuera perfectamente predictora (siempre que $X$ es rojo, la fruta está sana; siempre que es verde, está dañada), ¿cuánto valdría $H(Y|X)$? ¿Qué significaría eso para la Información Mutua?\section{Ejercicios Prácticos}
+
+\subsection{Ejercicio 1: Análisis de Datos}
+Imagine que ha recolectado datos de 100 frutos en una banda transportadora:
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Textura} & \textbf{Sano} & \textbf{Defectuoso} \\ \hline
+Lisa & 60 & 5 \\ \hline
+Rugosa & 10 & 25 \\ \hline
+\end{tabular}
+\end{center}
+
+1. Calcule la probabilidad de que un fruto sea ``Sano'' dado que su textura es ``Lisa''. \\
+2. ¿Es la ``Textura'' una buena variable para clasificar? Justifique su respuesta basándose en la tabla.
+
+\subsection{Ejercicio 2: Conceptos}
+Defina con sus propias palabras por qué en un sistema de visión artificial preferiríamos una variable con alta Información Mutua sobre una que sea fácil de calcular pero con baja Información Mutua.
+
+\section{Conclusión para el Programador}
+Al desarrollar el código, el primer paso no es programar el modelo complejo, sino limpiar los datos y seleccionar las variables que realmente ``informan'' sobre el defecto. Menos variables de alta calidad superan a muchas variables de baja calidad.
+
+\end{document}
