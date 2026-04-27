@@ -1,0 +1,462 @@
+\documentclass[12pt]{article}
+
+% ==================== PAQUETES ====================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{enumitem}
+
+\geometry{margin=2.5cm}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+
+% ==================== METADATOS ====================
+\title{Manual introductorio de IA y Visión en la Agroindustria}
+\author{John Jairo Leal Gómez}
+\date{Semanas 05 y 06}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ==================================================
+% SEMANA 05
+% ==================================================
+\part{Semana 05: Clasificación y lógica industrial}
+
+\section{Incertidumbre y selección: entropía e información mutua}
+
+\subsection{Explicación conceptual}
+En problemas de clasificación, una de las preguntas más importantes es: ``\textit{Qué tan difícil es decidir a qué clase pertenece un objeto?}''.
+La \textbf{entropía} mide precisamente ese nivel de incertidumbre.
+Si todos los elementos pertenecen a una sola clase, la incertidumbre es baja.
+Si las clases están mezcladas de manera equilibrada, la incertidumbre es alta.
+
+En agroindustria, esto aparece cuando se desea clasificar frutas, hojas o semillas en categorías como ``sano'' y ``defectuoso''.
+Si antes de observar una característica no sabemos bien a qué clase pertenece un elemento, tenemos mucha incertidumbre.
+Si una característica, por ejemplo una mancha o un olor, reduce esa duda, entonces esa característica aporta información útil.
+
+La \textbf{información mutua} mide cuánto ayuda una variable a reducir la incertidumbre sobre otra.
+En términos prácticos, nos dice qué tan valiosa es una característica para clasificar correctamente.
+
+\subsection{Explicación matemática}
+Sea \(Y\) una variable aleatoria que representa la clase de un producto.
+La entropía de \(Y\) se define como:
+\[
+H(Y) = - \sum_{y \in \mathcal{Y}} p(y)\log_2 p(y)
+\]
+
+donde \(p(y)\) es la probabilidad de la clase \(y\).
+
+Si usamos una característica \(X\), la incertidumbre restante sobre \(Y\) después de observar \(X\) se mide con la entropía condicional:
+\[
+H(Y \mid X)
+\]
+
+La información mutua entre \(X\) y \(Y\) se define como:
+\[
+I(X;Y) = H(Y) - H(Y \mid X)
+\]
+
+Interpretación:
+\begin{itemize}
+    \item Si \(I(X;Y) = 0\), la característica no ayuda a clasificar.
+    \item Si \(I(X;Y)\) es grande, la característica reduce bastante la incertidumbre.
+    \item Si \(I(X;Y) = H(Y)\), entonces la característica permite identificar perfectamente la clase.
+\end{itemize}
+
+\subsection{Ejemplo}
+Supongamos un lote de \(10\) mangos:
+\begin{itemize}
+    \item \(6\) están sanos.
+    \item \(4\) están defectuosos.
+\end{itemize}
+
+La entropía inicial de la clase es:
+\[
+H(Y) = -\left(\frac{6}{10}\log_2\frac{6}{10} + \frac{4}{10}\log_2\frac{4}{10}\right)
+\]
+
+Calculando:
+\[
+H(Y) \approx 0.971
+\]
+
+Ahora usamos la característica ``mancha oscura'':
+\begin{itemize}
+    \item \(5\) mangos tienen mancha; de ellos, \(4\) son defectuosos y \(1\) es sano.
+    \item \(5\) mangos no tienen mancha; de ellos, los \(5\) son sanos.
+\end{itemize}
+
+La entropía del grupo con mancha es:
+\[
+H(Y \mid X=\text{mancha}) =
+-\left(\frac{4}{5}\log_2\frac{4}{5} + \frac{1}{5}\log_2\frac{1}{5}\right)
+\approx 0.722
+\]
+
+La entropía del grupo sin mancha es:
+\[
+H(Y \mid X=\text{sin mancha}) =
+-\left(\frac{5}{5}\log_2\frac{5}{5}\right) = 0
+\]
+
+Entonces, la entropía condicional total es:
+\[
+H(Y \mid X) = \frac{5}{10}(0.722) + \frac{5}{10}(0) = 0.361
+\]
+
+Finalmente, la información mutua es:
+\[
+I(X;Y) = 0.971 - 0.361 = 0.610
+\]
+
+Esto significa que la característica ``mancha oscura'' reduce bastante la incertidumbre y es útil para clasificar los mangos.
+
+\subsection{Ejercicios}
+\begin{enumerate}[label=\arabic*.]
+    \item En un lote de \(10\) frutas, \(8\) son sanas y \(2\) están dañadas. Calcule la entropía de la clase.
+    \item Una característica divide un lote en dos grupos: en el primero hay \(4\) sanos y \(1\) dañado; en el segundo hay \(4\) sanos y \(1\) dañado. \`La información mutua será alta o baja? Justifique.
+    \item Explique con sus palabras por qué una característica que separa perfectamente las clases tiene mayor utilidad.
+    \item Si \(H(Y)=1\) y después de observar \(X\) se obtiene \(H(Y \mid X)=0.2\), calcule \(I(X;Y)\).
+\end{enumerate}
+
+% --------------------------------------------------
+
+\section{Árboles de decisión y métricas de calidad}
+
+\subsection{Explicación conceptual}
+Un árbol de decisión es un modelo que clasifica mediante una secuencia de preguntas.
+Cada nodo del árbol formula una condición, por ejemplo: ``\textit{¿Tiene mancha?}'', ``\textit{¿Huele fermentado?}'' o ``\textit{¿La textura es blanda?}''.
+Dependiendo de la respuesta, el elemento sigue una rama hasta llegar a una decisión final.
+
+La idea central es elegir, en cada paso, la pregunta que mejor separe las clases.
+Por eso los árboles de decisión están muy relacionados con la entropía y la información mutua.
+
+Sin embargo, construir un árbol no es suficiente.
+Después de entrenarlo, debemos evaluar qué tan bueno es.
+En contextos industriales, no basta con medir solo el porcentaje total de aciertos.
+A veces es más importante detectar todos los casos defectuosos que maximizar el número global de aciertos.
+
+\subsection{Explicación matemática}
+La medida más usada para elegir una división es la \textbf{ganancia de información}:
+\[
+IG(S,A) = H(S) - \sum_{i=1}^{k} w_i H(S_i)
+\]
+
+donde:
+\begin{itemize}
+    \item \(S\) es el conjunto original.
+    \item \(A\) es el atributo usado para dividir.
+    \item \(S_i\) son los subconjuntos generados.
+    \item \(w_i = \frac{|S_i|}{|S|}\) es el peso de cada subconjunto.
+\end{itemize}
+
+Entre mayor sea \(IG(S,A)\), mejor es la pregunta para dividir el conjunto.
+
+Para evaluar el clasificador, se usan las siguientes cantidades:
+\begin{itemize}
+    \item \(TP\): verdaderos positivos.
+    \item \(FP\): falsos positivos.
+    \item \(FN\): falsos negativos.
+    \item \(TN\): verdaderos negativos.
+\end{itemize}
+
+A partir de ellas se definen las métricas:
+\[
+\text{Precision} = \frac{TP}{TP+FP}
+\]
+
+\[
+\text{Recall} = \frac{TP}{TP+FN}
+\]
+
+\[
+F1 = 2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}
+\]
+
+\[
+\text{Accuracy} = \frac{TP+TN}{TP+TN+FP+FN}
+\]
+
+Interpretación:
+\begin{itemize}
+    \item \textbf{Precision}: de todo lo que el modelo marcó como positivo, cuánto era realmente positivo.
+    \item \textbf{Recall}: de todos los positivos reales, cuántos detectó el modelo.
+    \item \textbf{F1}: equilibrio entre precision y recall.
+    \item \textbf{Accuracy}: proporción total de aciertos.
+\end{itemize}
+
+\subsection{Ejemplo}
+Supongamos que un sistema evalúa \(100\) frutas:
+\begin{itemize}
+    \item \(20\) estaban realmente defectuosas.
+    \item El modelo detectó bien \(18\) defectuosas.
+    \item Marcó por error \(6\) frutas sanas como defectuosas.
+    \item Dejó pasar \(2\) defectuosas como si fueran sanas.
+\end{itemize}
+
+Entonces:
+\[
+TP = 18,\quad FP = 6,\quad FN = 2,\quad TN = 74
+\]
+
+La \textit{precision} es:
+\[
+\text{Precision} = \frac{18}{18+6} = \frac{18}{24} = 0.75
+\]
+
+El \textit{recall} es:
+\[
+\text{Recall} = \frac{18}{18+2} = \frac{18}{20} = 0.90
+\]
+
+El puntaje \(F1\) es:
+\[
+F1 = 2\cdot\frac{0.75\cdot 0.90}{0.75+0.90}
+\approx 0.818
+\]
+
+La exactitud global es:
+\[
+\text{Accuracy} = \frac{18+74}{100} = 0.92
+\]
+
+Aunque la exactitud es alta, el dato más importante en este caso puede ser el \textit{recall}, porque dejar pasar fruta defectuosa puede afectar todo el lote.
+
+\subsection{Ejercicios}
+\begin{enumerate}[label=\arabic*.]
+    \item Un modelo tiene \(TP=30\), \(FP=10\), \(FN=5\) y \(TN=55\). Calcule \textit{precision}, \textit{recall}, \(F1\) y \textit{accuracy}.
+    \item Explique por qué, en control de calidad, un falso negativo puede ser más costoso que un falso positivo.
+    \item Si un árbol puede dividir un conjunto usando dos atributos, uno con \(IG=0.12\) y otro con \(IG=0.35\), \`cuál debería elegir primero y por qué?
+    \item Un modelo tiene \textit{recall} del \(100\%\) pero \textit{precision} del \(10\%\). Describa qué ocurriría en la operación real de una planta agroindustrial.
+\end{enumerate}
+
+% ==================================================
+% SEMANA 06
+% ==================================================
+\part{Semana 06: CNN y visión artificial}
+
+\section{Tensores y convoluciones}
+
+\subsection{Explicación conceptual}
+Para un sistema de inteligencia artificial, una imagen no es una ``foto'' como la ve una persona, sino un conjunto ordenado de números.
+Ese conjunto se representa como un \textbf{tensor}.
+
+Si la imagen está en escala de grises, puede representarse como una matriz de tamaño \(alto \times ancho\).
+Si está en color, normalmente se representa como un tensor de tamaño \(alto \times ancho \times canales\), donde los canales suelen ser rojo, verde y azul.
+
+Las redes convolucionales usan \textbf{filtros} o \textbf{kernels}, que son matrices pequeñas que recorren la imagen.
+Cada filtro busca un patrón específico, como bordes, manchas, texturas o cambios bruscos de color.
+En agricultura, esto es útil para detectar síntomas de plagas, enfermedades o defectos superficiales.
+
+\subsection{Explicación matemática}
+Sea una imagen \(X\) y un filtro \(K\).
+La operación de convolución discreta en \(2\) dimensiones puede escribirse como:
+\[
+Y(i,j) = \sum_{m}\sum_{n} X(i+m,j+n)\,K(m,n)
+\]
+
+donde:
+\begin{itemize}
+    \item \(X\) es la imagen de entrada.
+    \item \(K\) es el filtro.
+    \item \(Y\) es la salida resultante.
+\end{itemize}
+
+En muchas implementaciones de redes convolucionales, esta operación corresponde en realidad a una correlación discreta, pero en cursos introductorios suele llamarse igualmente ``convolución''.
+
+Si una imagen en escala de grises tiene tamaño \(H \times W\), entonces contiene:
+\[
+H \cdot W
+\]
+números.
+
+Si la imagen es RGB, contiene:
+\[
+H \cdot W \cdot 3
+\]
+valores.
+
+Sin relleno y con paso \(1\), una imagen de tamaño \(H \times W\) filtrada con un kernel de tamaño \(h \times w\) produce una salida de tamaño:
+\[
+(H-h+1)\times(W-w+1)
+\]
+
+\subsection{Ejemplo}
+Considere la siguiente imagen en escala de grises:
+\[
+X=
+\begin{bmatrix}
+1 & 2 & 0 \\
+0 & 1 & 3 \\
+2 & 1 & 0
+\end{bmatrix}
+\]
+
+y el siguiente filtro:
+\[
+K=
+\begin{bmatrix}
+1 & 0 \\
+0 & -1
+\end{bmatrix}
+\]
+
+Aplicando el filtro con paso \(1\) y sin relleno, la salida tendrá tamaño:
+\[
+(3-2+1)\times(3-2+1)=2\times 2
+\]
+
+Ahora calculamos cada posición.
+
+Primera posición:
+\[
+Y(1,1)=
+1\cdot 1 + 2\cdot 0 + 0\cdot 0 + 1\cdot(-1)=0
+\]
+
+Segunda posición:
+\[
+Y(1,2)=
+2\cdot 1 + 0\cdot 0 + 1\cdot 0 + 3\cdot(-1)=-1
+\]
+
+Tercera posición:
+\[
+Y(2,1)=
+0\cdot 1 + 1\cdot 0 + 2\cdot 0 + 1\cdot(-1)=-1
+\]
+
+Cuarta posición:
+\[
+Y(2,2)=
+1\cdot 1 + 3\cdot 0 + 1\cdot 0 + 0\cdot(-1)=1
+\]
+
+Por tanto, la salida es:
+\[
+Y=
+\begin{bmatrix}
+0 & -1 \\
+-1 & 1
+\end{bmatrix}
+\]
+
+\subsection{Ejercicios}
+\begin{enumerate}[label=\arabic*.]
+    \item Si una imagen en escala de grises tiene tamaño \(10\times 10\), \`cuántos valores contiene el tensor?
+    \item Si una imagen RGB tiene tamaño \(10\times 10\), \`cuántos valores contiene el tensor?
+    \item Si una imagen tiene tamaño \(28\times 28\) y se aplica un filtro de \(3\times 3\) con paso \(1\) y sin relleno, \`cuál será el tamaño de la salida?
+    \item Aplique el filtro
+    \[
+    \begin{bmatrix}
+    1 & 0 \\
+    0 & -1
+    \end{bmatrix}
+    \]
+    sobre la matriz
+    \[
+    \begin{bmatrix}
+    2 & 1 & 0 \\
+    1 & 2 & 1 \\
+    0 & 1 & 2
+    \end{bmatrix}
+    \]
+    y calcule la salida completa.
+\end{enumerate}
+
+% --------------------------------------------------
+
+\section{CNN en agroindustria: detección de plagas y enfermedades}
+
+\subsection{Explicación conceptual}
+Una red neuronal convolucional, o CNN, procesa imágenes en varias etapas.
+Primero identifica patrones simples, como bordes o manchas.
+Luego combina esos patrones para reconocer estructuras más complejas, como zonas enfermas, perforaciones, decoloraciones o texturas anormales.
+
+En una aplicación agroindustrial, una CNN puede analizar una imagen de una hoja y decidir si está sana o si presenta síntomas de una enfermedad.
+Esto permite apoyar tareas de monitoreo, selección y diagnóstico temprano.
+
+Una arquitectura básica suele incluir:
+\begin{itemize}
+    \item \textbf{Capas convolucionales}, que extraen características.
+    \item \textbf{Funciones de activación}, que introducen no linealidad.
+    \item \textbf{Capas de \textit{pooling}}, que reducen tamaño y conservan rasgos importantes.
+    \item \textbf{Capas finales de clasificación}, que emiten la decisión.
+\end{itemize}
+
+\subsection{Explicación matemática}
+Después de una convolución, suele aplicarse una función de activación como ReLU:
+\[
+\text{ReLU}(z)=\max(0,z)
+\]
+
+Luego puede aplicarse una operación de \textit{max-pooling} sobre una región \(R\):
+\[
+P = \max_{(i,j)\in R} X(i,j)
+\]
+
+Si el problema es binario, por ejemplo ``hoja sana'' frente a ``roya'', la salida final puede modelarse con una función sigmoide:
+\[
+\hat{y} = \sigma(z)=\frac{1}{1+e^{-z}}
+\]
+
+donde \(\hat{y}\) es la probabilidad estimada de que la imagen pertenezca a la clase positiva.
+
+La regla de decisión más simple es:
+\begin{itemize}
+    \item Si \(\hat{y}\geq 0.5\), clasificar como ``enferma''.
+    \item Si \(\hat{y}<0.5\), clasificar como ``sana''.
+\end{itemize}
+
+\subsection{Ejemplo}
+Supongamos que una CNN analiza una imagen de una hoja de café y en la última capa obtiene:
+\[
+z=2.2
+\]
+
+Entonces, la probabilidad estimada de ``roya'' es:
+\[
+\hat{y}=\frac{1}{1+e^{-2.2}} \approx 0.900
+\]
+
+Como \(\hat{y}\geq 0.5\), el sistema clasifica la hoja como:
+\[
+\text{``Roya''}
+\]
+
+Interpretación práctica:
+\begin{itemize}
+    \item La red encontró patrones compatibles con la enfermedad.
+    \item El valor \(0.900\) indica alta confianza relativa en la clase positiva.
+    \item En campo o planta, esta salida puede usarse para activar una alerta o enviar la muestra a revisión.
+\end{itemize}
+
+\subsection{Ejercicios}
+\begin{enumerate}[label=\arabic*.]
+    \item Si una red produce \(\hat{y}=0.23\), \`cómo se clasificaría la hoja usando un umbral de \(0.5\)?
+    \item Calcule \(\hat{y}\) cuando \(z=0\). Interprete el resultado.
+    \item Explique por qué una capa de \textit{pooling} puede ayudar a reducir el costo computacional.
+    \item En un sistema de detección de plagas, \`por qué puede ser riesgoso tener un \textit{recall} muy bajo?
+\end{enumerate}
+
+% --------------------------------------------------
+
+\section{Ejercicios integradores}
+
+\begin{enumerate}[label=\arabic*.]
+    \item Un modelo de detección de plagas tiene \textit{recall} del \(100\%\) y \textit{precision} del \(10\%\). Explique qué le ocurre al agricultor en la práctica.
+    \item Una imagen de tamaño \(10\times 10\) en escala de grises entra a una CNN. \`Cuántos valores tiene el tensor de entrada?
+    \item Una base de datos tiene dos clases equilibradas: ``sano'' y ``enfermo''. \`La entropía inicial será alta o baja? Justifique.
+    \item En una planta de selección, compare dos modelos: uno con \textit{accuracy} del \(95\%\) y \textit{recall} del \(60\%\), y otro con \textit{accuracy} del \(90\%\) y \textit{recall} del \(95\%\). \`Cuál elegiría para evitar que salgan productos defectuosos y por qué?
+\end{enumerate}
+
+\end{document}

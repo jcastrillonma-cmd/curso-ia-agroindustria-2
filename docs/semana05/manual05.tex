@@ -1,0 +1,1935 @@
+\documentclass{article}
+
+% ==================== PAQUETES ====================
+\usepackage[utf8]{inputenc}      % Codificación de caracteres
+\usepackage[spanish]{babel}      % Idioma español
+\usepackage[T1]{fontenc}         % Codificación de fuentes
+\usepackage{amsmath}             % Matemáticas
+\usepackage{graphicx}            % Imágenes
+\usepackage{hyperref}            % Enlaces clickeables
+\usepackage{geometry}            % Márgenes
+\geometry{margin=2.5cm}
+\usepackage{amsfonts}
+% O mejor aún, carga el combo estándar de matemáticas:
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+% ==================== METADATOS ====================
+\title{Fundamentos Matemáticos de Inteligencia Artificial y Visión Artificial para Agroindustria.}
+\author{John Jairo Leal Gómez}
+\date{\today}
+
+% ==================== DOCUMENTO ====================
+\begin{document}
+
+% Portada
+\maketitle
+
+\section{Entropía e Información Mutua en Selección de Variables para Clasificación de Fruta por Defectos}
+
+\subsection{Introducción}
+
+En una línea de clasificación de fruta en poscosecha, uno de los objetivos más importantes es decidir de manera automática si un fruto pertenece a la clase \textit{sano} o a la clase \textit{defectuoso}. Esta decisión puede apoyarse en variables extraídas de imágenes, tales como color, textura, área de manchas, uniformidad superficial, circularidad de la silueta o proporción de regiones oscuras. Sin embargo, no toda variable visual aporta la misma capacidad de discriminación. Algunas describen con claridad la presencia de golpes, pudrición, escabiosis o manchas negras; otras, en cambio, pueden variar principalmente por iluminación, orientación del fruto o ruido del sistema de adquisición.
+
+Desde el punto de vista matemático, el problema central no consiste todavía en escoger un clasificador, sino en determinar cuáles variables contienen información relevante sobre la clase del fruto. Para formalizar esta idea se recurre a la teoría de la información. En particular, la \textbf{entropía} permite cuantificar la incertidumbre asociada a la clase del fruto, mientras que la \textbf{información mutua} permite medir cuánto se reduce esa incertidumbre cuando se observa una variable candidata.
+
+Así, la selección de variables puede interpretarse como un problema de reducción de incertidumbre: una buena variable es aquella cuya observación hace más predecible la condición del fruto. Esta formulación es especialmente útil en visión artificial aplicada a agroindustria, porque permite justificar con rigor por qué una característica visual debe conservarse o descartarse antes de construir un modelo de clasificación.
+
+\section{Conceptos preliminares}
+
+Antes de estudiar entropía, entropía condicional e información mutua, conviene fijar algunos conceptos básicos que servirán de lenguaje común en todo el capítulo. El objetivo de esta sección es establecer, con claridad y de manera gradual, los elementos probabilísticos y matemáticos mínimos que necesitaremos más adelante para analizar problemas de clasificación en visión artificial aplicada a agroindustria.
+
+En particular, trabajaremos con variables aleatorias que representan clases de calidad de un fruto y con variables aleatorias que representan características extraídas de su imagen, tales como color, textura, área afectada por manchas o medidas geométricas de la silueta.
+
+\subsection{Experimento aleatorio}
+
+Antes de definir variables aleatorias, distribuciones de probabilidad o medidas de información, es necesario precisar qué entendemos por experimento aleatorio.
+
+Un \textit{experimento aleatorio} es un procedimiento cuyo resultado no puede predecirse con certeza antes de realizarse, aunque sí pueden describirse todos sus resultados posibles. El conjunto de tales resultados se denomina \textit{espacio muestral} y se representa por
+\[
+\Omega.
+\]
+
+\subsubsection*{Ejemplo: lanzamiento de un dado}
+
+Consideremos el experimento aleatorio consistente en lanzar un dado equilibrado una vez y observar la cara superior. En este caso, el espacio muestral es
+\[
+\Omega=\{1,2,3,4,5,6\}.
+\]
+
+Cada elemento \(\omega \in \Omega\) representa un resultado elemental del experimento. Por ejemplo, \(\omega=4\) significa que la cara superior observada fue \(4\).
+
+Sobre este experimento pueden definirse eventos. Por ejemplo:
+
+\begin{itemize}
+\item el evento ``obtener un número par'':
+\[
+A=\{2,4,6\};
+\]
+
+\item el evento ``obtener un número mayor que \(4\)'':
+\[
+B=\{5,6\}.
+\]
+\end{itemize}
+
+\subsection{Variable aleatoria}
+
+La definición intuitiva de variable aleatoria como una función que asigna un valor a cada resultado del experimento es correcta, pero puede precisarse más desde el punto de vista matemático.
+
+\subsubsection*{Espacio de probabilidad}
+
+Partimos de un espacio de probabilidad
+\[
+(\Omega,\mathcal{F},\mathbb{P}),
+\]
+donde:
+
+\begin{itemize}
+\item \(\Omega\) es el espacio muestral, es decir, el conjunto de resultados elementales del experimento aleatorio;
+\item \(\mathcal{F}\) es una \(\sigma\)-álgebra de subconjuntos de \(\Omega\), cuyos elementos se llaman eventos;
+\item \(\mathbb{P}:\mathcal{F}\to [0,1]\) es una medida de probabilidad.
+\end{itemize}
+
+\paragraph{\(\sigma\)-álgebra.}
+Una \(\sigma\)-álgebra sobre un conjunto \(\Omega\) es una familia de subconjuntos de \(\Omega\), denotada por \(\mathcal{F}\), que contiene los eventos a los cuales se les puede asignar probabilidad. Debe cumplir tres propiedades:
+
+\begin{enumerate}
+\item \(\Omega \in \mathcal{F}\);
+\item si \(A \in \mathcal{F}\), entonces su complemento \(A^c \in \mathcal{F}\);
+\item si \(A_1,A_2,A_3,\dots \in \mathcal{F}\), entonces
+\[
+\bigcup_{n=1}^{\infty} A_n \in \mathcal{F}.
+\]
+\end{enumerate}
+
+\paragraph{Conjunto medible.}
+Un conjunto medible es simplemente un conjunto que pertenece a una \(\sigma\)-álgebra. Es decir, si \(A \subseteq \Omega\) y
+\[
+A \in \mathcal{F},
+\]
+entonces \(A\) es medible. En probabilidad, esto significa que \(A\) es un evento bien definido y que puede asignársele una probabilidad.
+
+\paragraph{Ejemplo de \(\sigma\)-álgebra.}
+Sea
+\[
+\Omega=\{1,2,3,4,5,6\}.
+\]
+Consideremos la colección
+\[
+\mathcal{F}=\{\emptyset,\Omega,\{2,4,6\},\{1,3,5\}\}.
+\]
+
+Esta colección es una \(\sigma\)-álgebra sobre \(\Omega\), porque:
+
+\begin{itemize}
+\item contiene a \(\Omega\);
+\item si un conjunto está en \(\mathcal{F}\), entonces su complemento también está en \(\mathcal{F}\);
+\item la unión numerable de conjuntos de \(\mathcal{F}\) sigue perteneciendo a \(\mathcal{F}\).
+\end{itemize}
+
+La presencia de la \(\sigma\)-álgebra \(\mathcal{F}\) es esencial, porque no basta con tener resultados posibles: también necesitamos saber sobre qué subconjuntos de \(\Omega\) tiene sentido asignar probabilidades.
+
+\subsubsection*{Definición formal}
+
+Sea \((\mathcal{X},\mathcal{A})\) un espacio medible, donde \(\mathcal{X}\) es el conjunto de valores posibles de la variable y \(\mathcal{A}\) es una \(\sigma\)-álgebra sobre \(\mathcal{X}\).
+
+Una \textit{variable aleatoria} es una función
+\[
+X:\Omega \to \mathcal{X}
+\]
+tal que, para todo conjunto medible \(A\in\mathcal{A}\), se cumple
+\[
+X^{-1}(A)=\{\omega\in\Omega:\, X(\omega)\in A\}\in\mathcal{F}.
+\]
+
+Es decir, una variable aleatoria es una \textbf{función medible} desde el espacio de probabilidad \((\Omega,\mathcal{F},\mathbb{P})\) hacia un espacio medible \((\mathcal{X},\mathcal{A})\).
+
+\subsubsection*{Interpretación de la condición de medibilidad}
+
+La condición
+\[
+X^{-1}(A)\in\mathcal{F}
+\quad \text{para todo } A\in\mathcal{A}
+\]
+garantiza que los subconjuntos del tipo
+\[
+\{\omega\in\Omega:\, X(\omega)\in A\}
+\]
+sean eventos a los que puede asignarse probabilidad.
+
+Por tanto, gracias a esta propiedad, expresiones como
+\[
+\mathbb{P}(X\in A)
+\]
+están bien definidas.
+
+En particular, si \(X\) es una variable aleatoria real, entonces conjuntos como
+\[
+\{\omega\in\Omega:\, X(\omega)\leq a\},
+\qquad
+\{\omega\in\Omega:\, X(\omega)=x\},
+\qquad
+\{\omega\in\Omega:\, a<X(\omega)\leq b\}
+\]
+deben pertenecer a \(\mathcal{F}\), pues solo así pueden recibir una probabilidad.
+
+\subsubsection*{Caso real-valuado}
+
+En muchos problemas aplicados, la variable toma valores reales, de modo que
+\[
+X:\Omega \to \mathbb{R}.
+\]
+
+En este caso, se considera sobre \(\mathbb{R}\) la \(\sigma\)-álgebra de Borel, denotada por
+\[
+\mathcal{B}(\mathbb{R}).
+\]
+
+Así, una variable aleatoria real es una función
+\[
+X:(\Omega,\mathcal{F})\to (\mathbb{R},\mathcal{B}(\mathbb{R}))
+\]
+tal que
+\[
+X^{-1}(B)\in\mathcal{F}
+\qquad
+\text{para todo } B\in\mathcal{B}(\mathbb{R}).
+\]
+
+Equivalente y frecuentemente, basta verificar que
+\[
+\{\omega\in\Omega:\, X(\omega)\leq a\}\in\mathcal{F}
+\qquad
+\text{para todo } a\in\mathbb{R}.
+\]
+
+\subsubsection*{Caso discreto}
+
+Si \(X\) es discreta y toma valores en un conjunto finito o numerable
+\[
+\mathcal{X}=\{x_1,x_2,\dots\},
+\]
+entonces la condición de medibilidad se reduce, en esencia, a exigir que cada conjunto del tipo
+\[
+\{\omega\in\Omega:\, X(\omega)=x_k\}
+\]
+sea un evento.
+
+En ese caso, la función de probabilidad de \(X\) se define por
+\[
+p_X(x_k)=\mathbb{P}(X=x_k).
+\]
+
+La suma de estas probabilidades debe satisfacer
+\[
+\sum_k p_X(x_k)=1.
+\]
+
+\subsubsection*{Qué significa realmente ``aleatoria''}
+
+Una variable aleatoria no es ``aleatoria'' porque la función \(X\) cambie de forma impredecible. La función \(X\) está perfectamente definida. Lo que es incierto es el resultado elemental \(\omega\) del experimento.
+
+Dicho de otro modo:
+
+\begin{itemize}
+\item \(\omega\) es incierto antes de realizar el experimento;
+\item \(X(\omega)\) hereda esa incertidumbre;
+\item la aleatoriedad proviene del experimento, no de la definición funcional de \(X\).
+\end{itemize}
+
+Esta observación es importante porque evita una confusión frecuente: una variable aleatoria no es un ``número misterioso'', sino una función medible evaluada sobre un resultado incierto.
+
+\subsubsection*{Ejemplo clásico con un dado}
+
+Consideremos el experimento aleatorio de lanzar un dado equilibrado una vez. Entonces:
+\[
+\Omega=\{1,2,3,4,5,6\}.
+\]
+
+Definamos una variable aleatoria
+\[
+X:\Omega\to\{0,1\}
+\]
+por
+\[
+X(\omega)=
+\begin{cases}
+1, & \text{si } \omega \text{ es par},\\
+0, & \text{si } \omega \text{ es impar}.
+\end{cases}
+\]
+
+Entonces:
+\[
+X^{-1}(\{1\})=\{2,4,6\},
+\qquad
+X^{-1}(\{0\})=\{1,3,5\}.
+\]
+
+Ambos conjuntos son eventos del experimento, por lo que la variable está bien definida desde el punto de vista probabilístico.
+
+Además,
+\[
+\mathbb{P}(X=1)=\frac{3}{6}=\frac{1}{2},
+\qquad
+\mathbb{P}(X=0)=\frac{3}{6}=\frac{1}{2}.
+\]
+
+Este ejemplo ilustra que la variable aleatoria no coincide con el resultado elemental: el resultado del experimento es un número entre \(1\) y \(6\), mientras que la variable \(X\) traduce ese resultado a una propiedad de interés, en este caso la paridad.
+
+\subsubsection*{Aplicación al problema de clasificación de fruta}
+
+En un sistema de visión artificial para inspección de fruta, cada resultado elemental
+\[
+\omega\in\Omega
+\]
+puede representar un fruto observado en la línea de clasificación.
+
+Sobre ese experimento pueden definirse distintas variables aleatorias.
+
+\paragraph{Variable de clase.}
+La clase del fruto puede modelarse como una variable aleatoria discreta
+\[
+Y:\Omega \to \mathcal{Y},
+\qquad
+\mathcal{Y}=\{\text{sano},\text{defectuoso}\}.
+\]
+
+Para que \(Y\) sea una variable aleatoria, los conjuntos
+\[
+\{\omega\in\Omega:\, Y(\omega)=\text{sano}\},
+\qquad
+\{\omega\in\Omega:\, Y(\omega)=\text{defectuoso}\}
+\]
+deben pertenecer a \(\mathcal{F}\).
+
+\paragraph{Variable de característica.}
+La característica visual \(X_j\) extraída de la imagen puede modelarse como
+\[
+X_j:\Omega \to \mathcal{X}_j.
+\]
+
+Por ejemplo:
+
+\begin{itemize}
+\item si \(X_j\) representa nivel de mancha, entonces
+\[
+\mathcal{X}_j=\{\text{baja},\text{media},\text{alta}\};
+\]
+\item si \(X_j\) representa porcentaje de área afectada, entonces
+\[
+\mathcal{X}_j\subseteq [0,1].
+\]
+\end{itemize}
+
+Así, cada fruto \(\omega\) se transforma en una etiqueta \(Y(\omega)\) y en una medición \(X_j(\omega)\).
+
+\subsubsection*{Importancia de la definición}
+
+La definición formal de variable aleatoria es la base de todo lo que sigue. Gracias a ella, pueden definirse rigurosamente:
+
+\begin{itemize}
+\item la distribución de probabilidad de \(X\);
+\item la distribución conjunta de \(X_j\) y \(Y\);
+\item probabilidades condicionales como
+\[
+\mathbb{P}(Y=y\mid X_j=x);
+\]
+\item esperanzas matemáticas como
+\[
+\mathbb{E}[g(X)];
+\]
+\item medidas de información como la entropía
+\[
+H(Y)
+\]
+y la información mutua
+\[
+I(X_j;Y).
+\]
+\end{itemize}
+
+Por tanto, una variable aleatoria no es solo una herramienta de notación, sino el objeto matemático que permite pasar de observaciones concretas a estructuras probabilísticas analizables.
+\subsection{Variable de clase y variable de característica}
+
+En un problema supervisado de clasificación de fruta por defectos, suelen aparecer dos tipos de variables aleatorias.
+
+\paragraph{Variable de clase.}
+La variable \(Y\) representa la etiqueta que se desea predecir. En el caso más simple,
+\[
+Y\in\mathcal{Y}=\{\text{sano},\text{defectuoso}\}.
+\]
+
+\paragraph{Variable de característica.}
+La variable \(X_j\) representa la \(j\)-ésima característica extraída de la imagen del fruto. Por ejemplo, \(X_j\) puede ser:
+
+\begin{itemize}
+\item una medida de textura;
+\item el porcentaje de área afectada por manchas;
+\item una medida de contraste;
+\item una razón geométrica asociada a la silueta;
+\item la intensidad media de un canal de color.
+\end{itemize}
+
+Formalmente,
+\[
+X_j:\Omega \to \mathcal{X}_j.
+\]
+
+El aprendizaje supervisado busca estudiar la relación entre \(X_j\) y \(Y\), es decir, entre lo que se observa en la imagen y la clase real del fruto.
+
+\subsection{Variables discretas y continuas}
+
+Una variable aleatoria puede ser \textit{discreta} o \textit{continua}.
+
+\paragraph{Variable discreta.}
+Una variable es discreta si toma valores en un conjunto finito o numerable. Por ejemplo:
+\[
+Y\in\{\text{sano},\text{defectuoso}\},
+\]
+o bien
+\[
+X_j\in\{\text{baja},\text{media},\text{alta}\}.
+\]
+
+\paragraph{Variable continua.}
+Una variable es continua si puede tomar valores en un intervalo de números reales. Por ejemplo:
+\[
+X_j\in [0,1],
+\]
+si \(X_j\) representa la fracción del área superficial afectada por una lesión.
+
+En este capítulo se comenzará principalmente con variables discretas, porque ese marco permite introducir de manera más transparente la entropía y la información mutua mediante sumas finitas.
+
+\subsection{Distribución de probabilidad}
+
+La \textit{distribución de probabilidad} de una variable aleatoria describe cómo se reparte la probabilidad entre sus posibles valores.
+
+Si \(Y\) es discreta, su distribución se expresa mediante
+\[
+p_Y(y)=p(y)=\mathbb{P}(Y=y).
+\]
+
+De manera análoga, si \(X_j\) es discreta,
+\[
+p_{X_j}(x)=p(x)=\mathbb{P}(X_j=x).
+\]
+
+Estas funciones satisfacen dos propiedades fundamentales:
+
+\begin{enumerate}
+\item
+\[
+p(y)\geq 0 \quad \text{para todo } y\in\mathcal{Y};
+\]
+
+\item
+\[
+\sum_{y\in\mathcal{Y}} p(y)=1.
+\]
+\end{enumerate}
+
+La primera propiedad expresa que las probabilidades no pueden ser negativas. La segunda indica que la suma de probabilidades de todos los resultados posibles debe ser igual a uno.
+
+\subsection{Distribución conjunta}
+
+Cuando se estudian simultáneamente dos variables aleatorias, aparece la \textit{distribución conjunta}. Si consideramos una característica \(X_j\) y la clase \(Y\), definimos
+\[
+p_{X_j,Y}(x,y)=p(x,y)=\mathbb{P}(X_j=x,\;Y=y).
+\]
+
+Esta distribución asigna una probabilidad a cada par \((x,y)\) y contiene la información completa sobre el comportamiento conjunto de ambas variables.
+
+Por ejemplo, \(p(x,y)\) puede representar la probabilidad de observar simultáneamente:
+
+\begin{itemize}
+\item una textura rugosa;
+\item y la clase defectuosa.
+\end{itemize}
+
+\subsection{Distribuciones marginales}
+
+A partir de la distribución conjunta se obtienen las \textit{distribuciones marginales}. En el caso discreto,
+\[
+p(x)=\sum_{y\in\mathcal{Y}} p(x,y),
+\]
+y
+\[
+p(y)=\sum_{x\in\mathcal{X}_j} p(x,y).
+\]
+
+La distribución marginal de \(X_j\) describe la frecuencia de los valores de la característica sin distinguir la clase. La distribución marginal de \(Y\) describe la frecuencia de las clases sin distinguir el valor de la característica.
+
+\subsection{Probabilidad condicional}
+
+La \textit{probabilidad condicional} permite incorporar información observada. Si \(p(x)>0\), se define
+\[
+p(y\mid x)=\frac{p(x,y)}{p(x)}.
+\]
+
+Esta cantidad responde a la pregunta:
+\begin{center}
+\emph{si ya conozco el valor \(x\) de la característica, cuál es la probabilidad de que la clase sea \(y\)?}
+\end{center}
+
+De forma análoga, si \(p(y)>0\),
+\[
+p(x\mid y)=\frac{p(x,y)}{p(y)}.
+\]
+
+Estas expresiones serán fundamentales más adelante, porque la teoría de la información compara la incertidumbre antes y después de observar una variable.
+
+\subsection{Independencia estadística}
+
+Dos variables aleatorias \(X\) y \(Y\) son \textit{independientes} si conocer una no cambia la distribución de la otra. En términos probabilísticos,
+\[
+p(x,y)=p(x)p(y)
+\quad \text{para todo } (x,y).
+\]
+
+Equivalentemente, si \(p(x)>0\),
+\[
+p(y\mid x)=p(y).
+\]
+
+Esta condición significa que observar \(X\) no aporta información sobre \(Y\). En selección de variables, una característica independiente de la clase no resulta útil para clasificar, porque no reduce incertidumbre sobre la etiqueta.
+
+\subsection{Esperanza matemática}
+
+La \textit{esperanza} o \textit{valor esperado} de una variable aleatoria discreta \(Z\) se define por
+\[
+\mathbb{E}[Z]=\sum_{z\in\mathcal{Z}} z\,p_Z(z).
+\]
+
+Más generalmente, si \(g(Z)\) es una función de la variable,
+\[
+\mathbb{E}[g(Z)] = \sum_{z\in\mathcal{Z}} g(z)\,p_Z(z).
+\]
+
+Esta noción puede interpretarse como un promedio ponderado por probabilidades. Será esencial porque la entropía se definirá precisamente como la esperanza del contenido de información.
+
+\subsection{Logaritmo e información}
+
+La teoría de la información utiliza el logaritmo para transformar probabilidades en cantidades aditivas de información. Si un evento tiene probabilidad \(p\), su contenido de información se definirá más adelante como
+\[
+h=-\log p.
+\]
+
+El logaritmo cumple una propiedad crucial:
+\[
+\log(ab)=\log a+\log b.
+\]
+
+Gracias a esta propiedad, la información de eventos independientes puede expresarse como suma de aportes individuales, lo que justifica la estructura matemática de la teoría.
+
+Si el logaritmo se toma en base \(2\), la información se mide en \textit{bits}; si se toma en base \(e\), se mide en \textit{nats}.
+
+\subsection{Frecuencias empíricas y probabilidad estimada}
+
+En aplicaciones reales, las probabilidades no suelen conocerse de manera exacta. Lo que se tiene es un conjunto de datos con observaciones de frutos etiquetados. A partir de esas observaciones se estiman probabilidades mediante frecuencias relativas.
+
+Si en un conjunto de \(n\) observaciones el evento \(A\) ocurre \(N(A)\) veces, una estimación natural de su probabilidad es
+\[
+\widehat{p}(A)=\frac{N(A)}{n}.
+\]
+
+De manera similar, si el par \((x,y)\) aparece \(N(x,y)\) veces, se estima
+\[
+\widehat{p}(x,y)=\frac{N(x,y)}{n}.
+\]
+
+Estas distribuciones empíricas serán la base práctica para calcular entropía, entropía condicional e información mutua a partir de datos de imágenes.
+
+\subsection{Ejemplo inicial}
+
+Supongamos que se analizan \(100\) frutos y se registra una característica \(X_j\) llamada \textit{nivel de mancha}, con valores posibles \(\{\text{baja},\text{alta}\}\), junto con la clase \(\{\text{sano},\text{defectuoso}\}\). Se obtienen los siguientes conteos:
+
+\[
+\begin{array}{c|cc|c}
+ & \text{sano} & \text{defectuoso} & \text{Total} \\
+\hline
+\text{baja} & 50 & 10 & 60 \\
+\text{alta} & 5 & 35 & 40 \\
+\hline
+\text{Total} & 55 & 45 & 100
+\end{array}
+\]
+
+La distribución conjunta empírica es:
+\[
+\widehat{p}(\text{baja},\text{sano})=0.50,\qquad
+\widehat{p}(\text{baja},\text{defectuoso})=0.10,
+\]
+\[
+\widehat{p}(\text{alta},\text{sano})=0.05,\qquad
+\widehat{p}(\text{alta},\text{defectuoso})=0.35.
+\]
+
+Las marginales son:
+\[
+\widehat{p}(\text{baja})=0.60,\qquad
+\widehat{p}(\text{alta})=0.40,
+\]
+\[
+\widehat{p}(\text{sano})=0.55,\qquad
+\widehat{p}(\text{defectuoso})=0.45.
+\]
+
+Además,
+\[
+\widehat{p}(\text{defectuoso}\mid \text{alta})=\frac{0.35}{0.40}=0.875,
+\]
+mientras que
+\[
+\widehat{p}(\text{defectuoso}\mid \text{baja})=\frac{0.10}{0.60}\approx 0.1667.
+\]
+
+Esto muestra que la probabilidad de defecto cambia de manera importante según el valor observado de la característica. Precisamente esa diferencia entre probabilidades marginales y condicionales será el punto de partida para introducir medidas de información.
+
+\subsection{Qué se usará después}
+
+Los conceptos de esta sección aparecerán repetidamente en lo que sigue. En particular:
+
+\begin{itemize}
+\item la distribución \(p(y)\) se usará para definir la entropía de la clase;
+\item la distribución conjunta \(p(x,y)\) se usará para estudiar dependencia entre característica y clase;
+\item la probabilidad condicional \(p(y\mid x)\) se usará para definir entropía condicional;
+\item la noción de esperanza permitirá interpretar la entropía como promedio de sorpresa;
+\item la independencia estadística permitirá entender cuándo una variable no aporta información útil.
+\end{itemize}
+
+Con este marco preliminar, ya es posible introducir de manera rigurosa el contenido de información de un evento y, a partir de él, la entropía de Shannon.
+
+\subsection{Planteamiento probabilístico}
+
+Antes de introducir la entropía y la información mutua, conviene fijar con rigor el modelo probabilístico del problema. En una línea de inspección automatizada, cada fruto que pasa frente al sistema de visión genera una observación: la cámara adquiere una imagen, el algoritmo extrae ciertas características y, finalmente, el fruto recibe una etiqueta de clase. Desde el punto de vista matemático, todo este proceso puede describirse mediante variables aleatorias.
+
+\subsubsection*{Experimento aleatorio}
+
+Consideremos un experimento aleatorio consistente en seleccionar un fruto de la línea de clasificación y observar dos elementos:
+
+\begin{enumerate}
+\item su clase de calidad;
+\item el valor de una característica visual extraída de su imagen.
+\end{enumerate}
+
+El espacio muestral se denota por \(\Omega\), y cada resultado elemental \(\omega \in \Omega\) representa un fruto observado bajo las condiciones reales del proceso industrial.
+
+\subsubsection*{Variable aleatoria de clase}
+
+Sea \(Y\) una variable aleatoria discreta que representa la clase del fruto:
+\[
+Y \in \mathcal{Y} = \{\text{sano}, \text{defectuoso}\}.
+\]
+
+Aquí, \(Y\) resume la decisión de calidad que interesa al sistema de clasificación. En problemas más complejos, el conjunto de clases podría ampliarse a categorías como
+\[
+\mathcal{Y}=\{\text{sano},\text{golpeado},\text{podrido},\text{con mancha superficial}\},
+\]
+pero para introducir la teoría es suficiente comenzar con el caso binario.
+
+\paragraph{Interpretación.}
+La variable \(Y\) no es un número en el sentido usual, sino una función definida sobre el espacio muestral:
+\[
+Y:\Omega \to \mathcal{Y}.
+\]
+Es decir, a cada fruto observado le asigna una etiqueta de clase.
+
+\subsubsection*{Variable aleatoria de característica}
+
+Sea \(X_j\) la variable aleatoria asociada a la \(j\)-ésima característica extraída de la imagen del fruto. Por ejemplo, \(X_j\) puede representar:
+
+\begin{itemize}
+\item la fracción del área ocupada por manchas;
+\item una medida de contraste local;
+\item un descriptor de textura;
+\item una medida de circularidad;
+\item la proporción de píxeles oscuros en la superficie visible.
+\end{itemize}
+
+Formalmente,
+\[
+X_j:\Omega \to \mathcal{X}_j,
+\]
+donde \(\mathcal{X}_j\) es el conjunto de valores posibles de la característica \(X_j\).
+
+Dependiendo del problema, \(X_j\) puede ser:
+
+\begin{itemize}
+\item \textbf{discreta}, por ejemplo
+\[
+\mathcal{X}_j=\{\text{baja},\text{media},\text{alta}\};
+\]
+\item \textbf{continua}, por ejemplo un porcentaje real de área afectada
+\[
+X_j \in [0,1].
+\]
+\end{itemize}
+
+En muchos desarrollos introductorios se empieza con variables discretas, porque permiten escribir las sumas de manera explícita y comprender con claridad las probabilidades involucradas.
+
+\subsubsection*{Observaciones y conjunto de datos}
+
+Supongamos que se observan \(n\) frutos. Entonces el conjunto de datos puede representarse como
+\[
+\mathcal{D}=\{(x_j^{(1)},y^{(1)}),(x_j^{(2)},y^{(2)}),\dots,(x_j^{(n)},y^{(n)})\}.
+\]
+
+Aquí:
+
+\begin{itemize}
+\item \(x_j^{(i)}\) es el valor observado de la característica \(X_j\) en el fruto \(i\);
+\item \(y^{(i)}\) es la clase observada del fruto \(i\).
+\end{itemize}
+
+Cada par \((x_j^{(i)},y^{(i)})\) constituye una realización conjunta de las variables aleatorias \(X_j\) y \(Y\).
+
+\paragraph{Idea central.}
+El objetivo no es solo contar cuántos frutos sanos y defectuosos hay, sino estudiar cómo se relacionan las clases con las características visuales. Esa relación queda codificada en la distribución conjunta.
+
+\subsubsection*{Distribución conjunta}
+
+La distribución conjunta de \(X_j\) y \(Y\) se denota por
+\[
+p_{X_j,Y}(x,y)=p(x,y).
+\]
+
+Esta función asigna a cada par \((x,y)\) la probabilidad de observar simultáneamente:
+
+\begin{itemize}
+\item el valor \(x\) para la característica \(X_j\),
+\item y la clase \(y\) para el fruto.
+\end{itemize}
+
+Matemáticamente,
+\[
+p(x,y)=\mathbb{P}(X_j=x,\;Y=y).
+\]
+
+La distribución conjunta contiene la información más completa sobre la relación entre ambas variables. A partir de ella pueden derivarse las distribuciones marginales y condicionales.
+
+\subsubsection*{Distribuciones marginales}
+
+Las distribuciones marginales se obtienen sumando la distribución conjunta sobre los valores de la otra variable. En particular,
+
+\[
+p_{X_j}(x)=p(x)=\sum_{y\in\mathcal{Y}} p(x,y),
+\]
+y
+\[
+p_Y(y)=p(y)=\sum_{x\in\mathcal{X}_j} p(x,y).
+\]
+
+\paragraph{Interpretación.}
+\begin{itemize}
+\item \(p(x)\) indica qué tan frecuente es observar el valor \(x\) de la característica, sin importar la clase.
+\item \(p(y)\) indica qué tan frecuente es la clase \(y\), sin importar el valor de la característica.
+\end{itemize}
+
+Por tanto, las marginales describen el comportamiento de cada variable por separado.
+
+\subsubsection*{Distribuciones condicionales}
+
+Cuando interesa estudiar cómo cambia la clase al observar una característica concreta, aparecen las probabilidades condicionales. Si \(p(x)>0\), definimos
+\[
+p(y\mid x)=\frac{p(x,y)}{p(x)}.
+\]
+
+De forma análoga, si \(p(y)>0\), podemos escribir
+\[
+p(x\mid y)=\frac{p(x,y)}{p(y)}.
+\]
+
+\paragraph{Interpretación.}
+\begin{itemize}
+\item \(p(y\mid x)\) responde a la pregunta: \emph{si ya conozco el valor de la característica, cuál es la probabilidad de que el fruto sea sano o defectuoso?}
+\item \(p(x\mid y)\) responde a la pregunta: \emph{si ya conozco la clase del fruto, cuál es la probabilidad de observar cierto valor de la característica?}
+\end{itemize}
+
+Estas distribuciones son fundamentales porque la teoría de la información compara la incertidumbre antes y después de observar \(X_j\).
+
+\subsubsection*{Propiedades básicas de las probabilidades}
+
+Para que el modelo probabilístico sea coherente, las probabilidades deben satisfacer:
+
+\begin{enumerate}
+\item No negatividad:
+\[
+p(x,y)\geq 0.
+\]
+
+\item Normalización:
+\[
+\sum_{x\in\mathcal{X}_j}\sum_{y\in\mathcal{Y}} p(x,y)=1.
+\]
+
+\item Coherencia con las marginales:
+\[
+p(x)=\sum_{y\in\mathcal{Y}} p(x,y), \qquad
+p(y)=\sum_{x\in\mathcal{X}_j} p(x,y).
+\]
+\end{enumerate}
+
+Estas condiciones garantizan que estamos trabajando con una distribución de probabilidad válida.
+
+\subsubsection*{Estimación empírica a partir de datos}
+
+En aplicaciones reales no conocemos las probabilidades exactas del proceso; lo que tenemos es una muestra de frutos observados. Por ello, se trabaja con distribuciones empíricas.
+
+Si \(N(x,y)\) denota el número de observaciones en las que se cumple simultáneamente \(X_j=x\) y \(Y=y\), entonces la probabilidad conjunta empírica se define como
+\[
+\widehat{p}(x,y)=\frac{N(x,y)}{n}.
+\]
+
+Equivalentemente,
+\[
+\widehat{p}(x,y)=\frac{1}{n}\sum_{i=1}^{n}\mathbf{1}\{x_j^{(i)}=x,\; y^{(i)}=y\},
+\]
+donde \(\mathbf{1}\{\cdot\}\) es la función indicadora, que vale \(1\) cuando la condición se cumple y \(0\) en caso contrario.
+
+A partir de esta distribución conjunta empírica, se obtienen las marginales empíricas:
+\[
+\widehat{p}(x)=\sum_{y\in\mathcal{Y}}\widehat{p}(x,y), \qquad
+\widehat{p}(y)=\sum_{x\in\mathcal{X}_j}\widehat{p}(x,y),
+\]
+y las distribuciones condicionales empíricas:
+\[
+\widehat{p}(y\mid x)=\frac{\widehat{p}(x,y)}{\widehat{p}(x)}, \qquad \widehat{p}(x)>0.
+\]
+
+\subsubsection*{Ejemplo 1: Variable discreta binaria}
+
+Supóngase que para \(n=100\) frutos se estudia una característica \(X_j\) llamada \emph{nivel de mancha}, con dos valores posibles:
+\[
+\mathcal{X}_j=\{\text{baja},\text{alta}\}.
+\]
+
+Se obtienen los siguientes conteos:
+
+\[
+\begin{array}{c|cc|c}
+ & Y=\text{sano} & Y=\text{defectuoso} & \text{Total} \\
+\hline
+X_j=\text{baja} & 50 & 10 & 60 \\
+X_j=\text{alta} & 5 & 35 & 40 \\
+\hline
+\text{Total} & 55 & 45 & 100
+\end{array}
+\]
+
+Entonces la distribución conjunta empírica es:
+\[
+\widehat{p}(\text{baja},\text{sano})=\frac{50}{100}=0.50,
+\]
+\[
+\widehat{p}(\text{baja},\text{defectuoso})=\frac{10}{100}=0.10,
+\]
+\[
+\widehat{p}(\text{alta},\text{sano})=\frac{5}{100}=0.05,
+\]
+\[
+\widehat{p}(\text{alta},\text{defectuoso})=\frac{35}{100}=0.35.
+\]
+
+Las marginales son:
+\[
+\widehat{p}(X_j=\text{baja})=0.50+0.10=0.60,
+\]
+\[
+\widehat{p}(X_j=\text{alta})=0.05+0.35=0.40,
+\]
+\[
+\widehat{p}(Y=\text{sano})=0.50+0.05=0.55,
+\]
+\[
+\widehat{p}(Y=\text{defectuoso})=0.10+0.35=0.45.
+\]
+
+Ahora calculemos las probabilidades condicionales de la clase dado el nivel de mancha:
+\[
+\widehat{p}(\text{defectuoso}\mid \text{alta})
+=
+\frac{\widehat{p}(\text{alta},\text{defectuoso})}{\widehat{p}(\text{alta})}
+=
+\frac{0.35}{0.40}
+=0.875.
+\]
+
+Análogamente,
+\[
+\widehat{p}(\text{defectuoso}\mid \text{baja})
+=
+\frac{0.10}{0.60}
+\approx 0.1667.
+\]
+
+\paragraph{Lectura del ejemplo.}
+Cuando el nivel de mancha es alto, la probabilidad de que el fruto sea defectuoso es \(0.875\). En cambio, cuando el nivel de mancha es bajo, esa probabilidad cae aproximadamente a \(0.1667\). Esto sugiere que la característica \(X_j\) contiene información relevante sobre la clase.
+
+\subsubsection*{Ejemplo 2: Verificación de independencia}
+
+Recordemos que \(X_j\) y \(Y\) son independientes si y solo si
+\[
+p(x,y)=p(x)p(y)
+\quad \text{para todo } (x,y)\in\mathcal{X}_j\times\mathcal{Y}.
+\]
+
+En el ejemplo anterior:
+\[
+\widehat{p}(\text{alta},\text{defectuoso})=0.35.
+\]
+
+Si hubiera independencia, debería cumplirse
+\[
+\widehat{p}(\text{alta})\widehat{p}(\text{defectuoso})
+=0.40\times 0.45
+=0.18.
+\]
+
+Como
+\[
+0.35 \neq 0.18,
+\]
+concluimos que \(X_j\) y \(Y\) no son independientes.
+
+\paragraph{Significado.}
+Esta desigualdad indica que el valor de la característica y la clase están estadísticamente relacionados. Precisamente esa dependencia es la que más adelante cuantificaremos con la información mutua.
+
+\subsubsection*{Ejemplo 3: Variable continua y discretización}
+
+Supóngase ahora que \(X_j\) representa el porcentaje de área afectada por manchas:
+\[
+X_j \in [0,1].
+\]
+
+Por ejemplo, un fruto puede tener:
+\[
+X_j=0.03,\quad X_j=0.18,\quad X_j=0.41.
+\]
+
+En un curso introductorio, una estrategia útil consiste en discretizar esta variable en intervalos:
+\[
+\mathcal{X}_j=\{[0,0.05),[0.05,0.20),[0.20,1.00]\}.
+\]
+
+Así, el problema vuelve a un marco discreto y pueden construirse tablas de frecuencias conjuntas como en el ejemplo anterior. Más adelante, cuando el lector tenga mayor madurez matemática, podrá extender la teoría a variables continuas usando densidades.
+
+\subsubsection*{Por qué este planteamiento es importante}
+
+Toda la teoría de la información que sigue descansa sobre una idea muy simple pero profunda:
+
+\begin{center}
+\emph{si observar \(X_j\) cambia de forma importante la distribución de \(Y\), entonces \(X_j\) es una variable útil para clasificar.}
+\end{center}
+
+Dicho de otro modo:
+
+\begin{itemize}
+\item si
+\[
+p(y\mid x)=p(y) \quad \text{para todo } x,
+\]
+entonces conocer \(X_j\) no aporta nada sobre la clase;
+
+\item si, por el contrario,
+\[
+p(y\mid x)
+\]
+cambia notablemente con \(x\), entonces la característica sí modifica nuestra incertidumbre sobre el estado del fruto.
+\end{itemize}
+
+Esa diferencia entre la incertidumbre \emph{antes} y \emph{después} de observar la variable es exactamente lo que formalizarán la entropía condicional y la información mutua.
+
+\subsubsection*{Resumen estructural del modelo}
+
+En este punto, el modelo probabilístico queda definido por los siguientes elementos:
+
+\begin{enumerate}
+\item una variable de clase
+\[
+Y\in\mathcal{Y};
+\]
+
+\item una variable de característica
+\[
+X_j\in\mathcal{X}_j;
+\]
+
+\item una distribución conjunta
+\[
+p(x,y)=\mathbb{P}(X_j=x,Y=y);
+\]
+
+\item distribuciones marginales
+\[
+p(x),\quad p(y);
+\]
+
+\item distribuciones condicionales
+\[
+p(y\mid x),\quad p(x\mid y).
+\]
+\end{enumerate}
+
+Con estos objetos matemáticos ya es posible introducir, con rigor, las definiciones de entropía, entropía condicional e información mutua.
+
+\subsubsection*{Ejercicios propuestos}
+
+\paragraph{Ejercicio 1.}
+Considere la siguiente tabla de frecuencias para una característica \(X_j\) llamada \emph{textura superficial}:
+
+\[
+\begin{array}{c|cc|c}
+ & \text{sano} & \text{defectuoso} & \text{Total} \\
+\hline
+\text{uniforme} & 42 & 8 & 50 \\
+\text{rugosa} & 18 & 32 & 50 \\
+\hline
+\text{Total} & 60 & 40 & 100
+\end{array}
+\]
+
+Calcule:
+
+\begin{enumerate}
+\item la distribución conjunta empírica;
+\item las distribuciones marginales;
+\item las probabilidades condicionales
+\[
+\widehat{p}(\text{defectuoso}\mid \text{uniforme}), \qquad
+\widehat{p}(\text{defectuoso}\mid \text{rugosa});
+\]
+\item una interpretación agroindustrial de los resultados.
+\end{enumerate}
+
+\paragraph{Ejercicio 2.}
+Demuestre que, para cualquier distribución conjunta válida,
+\[
+\sum_{x\in\mathcal{X}_j} p(x)=1
+\qquad \text{y} \qquad
+\sum_{y\in\mathcal{Y}} p(y)=1.
+\]
+
+\paragraph{Ejercicio 3.}
+Pruebe que si \(X_j\) y \(Y\) son independientes, entonces
+\[
+p(y\mid x)=p(y)
+\quad \text{para todo } x \text{ tal que } p(x)>0.
+\]
+
+\paragraph{Ejercicio 4.}
+Suponga que \(X_j\) representa el porcentaje de área manchada de un fruto. Proponga tres formas distintas de discretizar esa variable y discuta cómo la elección de intervalos puede afectar el análisis probabilístico posterior.
+
+\paragraph{Ejercicio 5.}
+En una base de datos de \(200\) frutos se observan los siguientes conteos para una característica llamada \emph{oscurecimiento superficial}:
+
+\[
+\begin{array}{c|cc|c}
+ & \text{sano} & \text{defectuoso} & \text{Total} \\
+\hline
+\text{bajo} & 70 & 20 & 90 \\
+\text{medio} & 25 & 35 & 60 \\
+\text{alto} & 5 & 45 & 50 \\
+\hline
+\text{Total} & 100 & 100 & 200
+\end{array}
+\]
+
+\begin{enumerate}
+\item Construya la distribución conjunta empírica.
+\item Calcule las marginales.
+\item Calcule
+\[
+\widehat{p}(\text{defectuoso}\mid \text{bajo}),\quad
+\widehat{p}(\text{defectuoso}\mid \text{medio}),\quad
+\widehat{p}(\text{defectuoso}\mid \text{alto}).
+\]
+\item Indique cuál de los tres niveles parece más asociado con la presencia de defecto.
+\end{enumerate}
+
+Una base de datos de imágenes no solo contiene fotografías, sino evidencia estadística. Cada característica visual define una variable aleatoria, y cada tabla de frecuencias es una aproximación empírica a una distribución de probabilidad. La teoría de la información comienza exactamente en este punto: cuando nos preguntamos cuánto cambia nuestro conocimiento sobre la clase del fruto al observar una medición visual concreta.
+
+\subsection{Contenido de información}
+
+Antes de definir la entropía, es necesario introducir una magnitud elemental de la teoría de la información: el \textit{contenido de información} de un evento. Esta cantidad también se denomina \textit{auto-información}, \textit{información puntual} o \textit{sorpresa}. La idea intuitiva es simple: cuando ocurre un evento muy improbable, sentimos que hemos aprendido más que cuando ocurre un evento casi seguro.
+
+En el contexto de clasificación de fruta por defectos, esta idea puede interpretarse así: si en una línea de selección la mayoría de los frutos son sanos, observar un fruto sano aporta poca novedad; en cambio, detectar un defecto raro constituye una observación más informativa porque rompe la expectativa dominante del sistema.
+
+\subsubsection*{Definición formal}
+
+Sea \(Y\) una variable aleatoria discreta y sea \(y\) un posible valor de \(Y\), con probabilidad \(p(y)\). Definimos el contenido de información asociado al evento \(Y=y\) por medio de la expresión
+\[
+h(y) = -\log p(y).
+\]
+
+Si el logaritmo se toma en base \(2\), la unidad de medida es el \textit{bit}; si se toma en base \(e\), la unidad es el \textit{nat}.
+
+\subsubsection*{Lectura conceptual}
+
+La fórmula
+\[
+h(y) = -\log p(y)
+\]
+establece una relación inversa entre probabilidad e información: cuanto menor es \(p(y)\), mayor es \(h(y)\). Esto formaliza la intuición de que los eventos raros son más sorprendentes que los frecuentes.
+
+Por ejemplo, si un lote tiene una fracción muy alta de frutos sanos, entonces observar la clase \(\text{sano}\) no cambia demasiado nuestro conocimiento del proceso. En contraste, si aparece un fruto defectuoso en un lote donde los defectos son escasos, esa observación resulta más informativa porque obliga a revisar la expectativa previa.
+
+\subsubsection*{Por qué la función debe depender de \(p(y)\)}
+
+Si queremos medir la información aportada por un evento, es razonable exigir que dicha medida dependa únicamente de su probabilidad. En efecto, desde un punto de vista probabilístico, dos eventos con la misma probabilidad deberían aportar la misma cantidad de información. Por tanto, buscamos una función
+\[
+h:[0,1]\to [0,\infty]
+\]
+tal que la información de un evento dependa solo de \(p(y)\).
+
+Esto conduce a escribir
+\[
+h(y)=\varphi(p(y)),
+\]
+para alguna función \(\varphi\) que debe satisfacer ciertas propiedades naturales.
+
+\subsubsection*{Propiedades deseables}
+
+Para que la noción de contenido de información sea matemáticamente coherente, es deseable que satisfaga al menos las siguientes condiciones:
+
+\begin{enumerate}
+\item \textbf{Monotonía:} si un evento es menos probable, debe ser más informativo.
+
+Es decir, si
+\[
+p(y_1) < p(y_2),
+\]
+entonces debería cumplirse
+\[
+h(y_1) > h(y_2).
+\]
+
+\item \textbf{No negatividad:} la información aportada por un evento no debe ser negativa:
+\[
+h(y)\geq 0.
+\]
+
+\item \textbf{Evento seguro:} si un evento ocurre con probabilidad \(1\), entonces no aporta información nueva, de modo que
+\[
+h(y)=0 \qquad \text{si } p(y)=1.
+\]
+
+\item \textbf{Aditividad para eventos independientes:} si dos eventos independientes ocurren conjuntamente, la información total debe ser la suma de sus informaciones individuales.
+\end{enumerate}
+
+La última propiedad es especialmente importante. Si \(A\) y \(B\) son eventos independientes, entonces
+\[
+p(A\cap B)=p(A)p(B).
+\]
+Por tanto, querríamos que
+\[
+h(A\cap B)=h(A)+h(B).
+\]
+
+La función logaritmo satisface exactamente esta propiedad, porque
+\[
+-\log(p(A)p(B))=-\log p(A)-\log p(B).
+\]
+Por esta razón, la elección
+\[
+h(y)=-\log p(y)
+\]
+no es arbitraria, sino estructuralmente natural.
+
+\subsubsection*{Interpretación geométrica y analítica}
+
+La función
+\[
+h(p)=-\log p, \qquad 0<p\leq 1,
+\]
+es decreciente y convexa. Esto significa que al disminuir la probabilidad, la información crece, y además crece de manera no lineal.
+
+En particular:
+
+\begin{itemize}
+\item si \(p(y)\) es cercano a \(1\), entonces \(h(y)\) es pequeño;
+\item si \(p(y)\) es cercano a \(0\), entonces \(h(y)\) es grande;
+\item en el límite,
+\[
+\lim_{p(y)\to 0^+} -\log p(y)=+\infty.
+\]
+\end{itemize}
+
+Este comportamiento tiene una interpretación clara: un evento extremadamente raro tendría una capacidad de sorpresa extremadamente alta.
+
+\subsubsection*{Casos particulares}
+
+Es útil revisar algunos valores concretos.
+
+\paragraph{Caso 1: evento seguro.}
+Si
+\[
+p(y)=1,
+\]
+entonces
+\[
+h(y)=-\log 1 = 0.
+\]
+
+Esto concuerda con la intuición: si el evento era completamente predecible, no hemos aprendido nada nuevo al observarlo.
+
+\paragraph{Caso 2: evento equiprobable binario.}
+Si hay dos resultados igualmente probables y
+\[
+p(y)=\frac{1}{2},
+\]
+entonces, usando logaritmo en base \(2\),
+\[
+h(y)=-\log_2\left(\frac{1}{2}\right)=1.
+\]
+
+Esto significa que un evento equiprobable entre dos alternativas aporta \(1\) bit de información.
+
+\paragraph{Caso 3: evento poco frecuente.}
+Si
+\[
+p(y)=\frac{1}{8},
+\]
+entonces
+\[
+h(y)=-\log_2\left(\frac{1}{8}\right)=3.
+\]
+
+Por tanto, un evento con probabilidad \(1/8\) aporta más información que uno con probabilidad \(1/2\).
+
+\subsubsection*{Ejemplo agroindustrial 1: clase del fruto}
+
+Supongamos que en una línea de clasificación el \(90\%\) de los frutos son sanos y el \(10\%\) son defectuosos. Entonces:
+\[
+p(\text{sano})=0.9, \qquad p(\text{defectuoso})=0.1.
+\]
+
+El contenido de información de observar un fruto sano es
+\[
+h(\text{sano})=-\log_2(0.9),
+\]
+mientras que el contenido de información de observar un fruto defectuoso es
+\[
+h(\text{defectuoso})=-\log_2(0.1).
+\]
+
+Como \(0.1<0.9\), se sigue que
+\[
+h(\text{defectuoso})>h(\text{sano}).
+\]
+
+\paragraph{Interpretación.}
+En un lote dominado por frutos sanos, encontrar un fruto defectuoso es mucho más sorprendente e informativo que encontrar uno sano. Esto anticipa una idea clave: las clases minoritarias suelen cargar más sorpresa puntual, aunque no necesariamente más importancia operativa.
+
+\subsubsection*{Ejemplo agroindustrial 2: característica visual}
+
+Consideremos ahora una característica discreta \(X_j\) que representa el nivel de mancha superficial:
+\[
+X_j \in \{\text{baja},\text{media},\text{alta}\}.
+\]
+
+Supongamos que en una base de datos se estima:
+\[
+p(\text{baja})=0.60,\qquad p(\text{media})=0.30,\qquad p(\text{alta})=0.10.
+\]
+
+Entonces, en bits,
+\[
+h(\text{baja})=-\log_2(0.60),
+\]
+\[
+h(\text{media})=-\log_2(0.30),
+\]
+\[
+h(\text{alta})=-\log_2(0.10).
+\]
+
+Como el nivel \(\text{alta}\) es el menos frecuente, su observación es la más informativa. Sin embargo, conviene notar algo importante: que un valor sea muy informativo en sí mismo no implica todavía que sea útil para clasificar. Para eso hará falta estudiar cómo esa característica se relaciona con la clase \(Y\), lo cual nos llevará después a la entropía condicional y a la información mutua.
+
+\subsubsection*{Ejemplo agroindustrial 3: eventos conjuntos}
+
+Supongamos ahora dos eventos:
+
+\begin{itemize}
+\item \(A\): ``el fruto presenta mancha alta'';
+\item \(B\): ``el fruto es defectuoso''.
+\end{itemize}
+
+Si, para simplificar, asumimos independencia y además
+\[
+p(A)=0.1, \qquad p(B)=0.2,
+\]
+entonces
+\[
+p(A\cap B)=0.1\times 0.2 = 0.02.
+\]
+
+El contenido de información del evento conjunto es
+\[
+h(A\cap B)=-\log p(A\cap B)=-\log(0.02).
+\]
+
+Por propiedad del logaritmo,
+\[
+h(A\cap B)=-\log(0.1)-\log(0.2)=h(A)+h(B).
+\]
+
+Este resultado muestra por qué el logaritmo es una elección tan natural: transforma productos de probabilidades en sumas de información.
+
+\subsubsection*{Comparación entre probabilidad e información}
+
+La relación entre probabilidad e información no es lineal. Una reducción moderada en probabilidad no genera un aumento proporcional de la información; el crecimiento viene gobernado por una ley logarítmica.
+
+Por ejemplo, en base \(2\):
+
+\[
+p(y)=1 \quad \Rightarrow \quad h(y)=0,
+\]
+\[
+p(y)=\frac{1}{2} \quad \Rightarrow \quad h(y)=1,
+\]
+\[
+p(y)=\frac{1}{4} \quad \Rightarrow \quad h(y)=2,
+\]
+\[
+p(y)=\frac{1}{8} \quad \Rightarrow \quad h(y)=3.
+\]
+
+Cada vez que la probabilidad se divide por \(2\), la información aumenta en \(1\) bit.
+
+\subsubsection*{Observación importante: información de un evento versus información de una variable}
+
+Debe distinguirse cuidadosamente entre dos ideas:
+
+\begin{enumerate}
+\item el contenido de información de un \emph{evento particular}, dado por
+\[
+h(y)=-\log p(y);
+\]
+
+\item la información promedio asociada a una \emph{variable aleatoria completa}, que más adelante definiremos como entropía.
+\end{enumerate}
+
+La primera es una magnitud puntual: mide la sorpresa de un resultado específico. La segunda es una magnitud promedio: resume la incertidumbre global del experimento. En otras palabras, la entropía surgirá como el valor esperado del contenido de información.
+
+\subsubsection*{Puente hacia la entropía}
+
+Una vez definida la sorpresa asociada a cada evento, el siguiente paso natural es preguntarse: \emph{cuánta sorpresa produce, en promedio, la variable aleatoria \(Y\)?}
+
+La respuesta será la entropía de Shannon:
+\[
+H(Y)=\mathbb{E}[h(Y)].
+\]
+
+Sustituyendo la definición de \(h(Y)\), se obtiene
+\[
+H(Y)=\mathbb{E}[-\log p(Y)].
+\]
+
+En el caso discreto, esto llevará a la fórmula
+\[
+H(Y)=-\sum_{y\in\mathcal{Y}} p(y)\log p(y),
+\]
+que estudiaremos en la siguiente subsección.
+
+\subsubsection*{Ejercicios propuestos}
+
+\paragraph{Ejercicio 1.}
+Calcule, en bits, el contenido de información de un evento con probabilidad:
+\[
+p(y)=1,\qquad p(y)=\frac{1}{2},\qquad p(y)=\frac{1}{4},\qquad p(y)=\frac{1}{10}.
+\]
+
+\paragraph{Ejercicio 2.}
+Demuestre que la función
+\[
+h(p)=-\log p
+\]
+es estrictamente decreciente en el intervalo \((0,1]\).
+
+\paragraph{Ejercicio 3.}
+Sea \(A\) y \(B\) dos eventos independientes. Pruebe que
+\[
+h(A\cap B)=h(A)+h(B).
+\]
+
+\paragraph{Ejercicio 4.}
+En una planta de clasificación, la probabilidad de que un fruto sea defectuoso es \(0.05\). Calcule el contenido de información, en bits, asociado a observar un fruto defectuoso.
+
+\paragraph{Ejercicio 5.}
+Considere la variable
+\[
+X_j\in\{\text{baja},\text{media},\text{alta}\}
+\]
+con probabilidades
+\[
+p(\text{baja})=0.7,\qquad p(\text{media})=0.2,\qquad p(\text{alta})=0.1.
+\]
+
+Calcule:
+\begin{enumerate}
+\item \(h(\text{baja})\),
+\item \(h(\text{media})\),
+\item \(h(\text{alta})\),
+\end{enumerate}
+usando logaritmo en base \(2\), e interprete el resultado en términos de sorpresa observacional.
+
+\paragraph{Ejercicio 6.}
+Explique con sus propias palabras por qué un evento muy raro aporta más información que un evento muy frecuente. Luego proponga un ejemplo agrícola o agroindustrial distinto al de clasificación de fruta.
+
+
+No se debe pensar todavía en la información como una propiedad ``inteligente'' del sistema, sino como una medida matemática de sorpresa asociada a resultados probabilísticos. La idea esencial es esta: la información aparece cuando una observación reduce nuestra previsibilidad previa. La fórmula
+\[
+h(y)=-\log p(y)
+\]
+captura exactamente esa reducción en escala logarítmica y prepara el terreno para definir la entropía como sorpresa promedio.
+
+\subsection{Entropía de Shannon}
+
+Una vez introducida la noción de contenido de información de un evento,
+\[
+h(y)=-\log p(y),
+\]
+el siguiente paso natural consiste en preguntarse cuál es la cantidad de información que produce, en promedio, una variable aleatoria completa. Esta pregunta es fundamental en teoría de la información, porque en la práctica no observamos un solo resultado aislado, sino una sucesión de realizaciones de un experimento aleatorio.
+
+En el problema de clasificación de fruta por defectos, la variable aleatoria de interés es la clase del fruto:
+\[
+Y\in\mathcal{Y}=\{\text{sano},\text{defectuoso}\}.
+\]
+Cada vez que un fruto entra a la línea de inspección, el sistema observa una realización de \(Y\). Algunas veces aparecerá un fruto sano; otras veces, un fruto defectuoso. Como cada resultado tiene una probabilidad asociada, también tiene un contenido de información asociado. La entropía resume la sorpresa promedio de ese experimento.
+
+\subsubsection*{Definición como valor esperado}
+
+La entropía de Shannon de la variable aleatoria \(Y\) se define como la esperanza matemática del contenido de información:
+\[
+H(Y)=\mathbb{E}[h(Y)].
+\]
+
+Sustituyendo la definición de \(h(Y)\), obtenemos
+\[
+H(Y)=\mathbb{E}[-\log p(Y)].
+\]
+
+Si \(Y\) es discreta y toma valores en \(\mathcal{Y}\), entonces por definición de esperanza:
+\[
+H(Y)=\sum_{y\in\mathcal{Y}} p(y)\,h(y).
+\]
+
+Como
+\[
+h(y)=-\log p(y),
+\]
+se concluye que
+\[
+H(Y)= -\sum_{y\in\mathcal{Y}} p(y)\log p(y).
+\]
+
+Esta es la fórmula fundamental de la entropía de Shannon en el caso discreto.
+
+\subsubsection*{Lectura de la fórmula}
+
+La expresión
+\[
+H(Y)= -\sum_{y\in\mathcal{Y}} p(y)\log p(y)
+\]
+puede leerse de la siguiente manera:
+
+\begin{itemize}
+\item cada resultado \(y\) aporta una cantidad de información \( -\log p(y)\);
+\item ese aporte no se toma de manera aislada, sino ponderado por la probabilidad \(p(y)\) de que dicho resultado ocurra;
+\item la suma de todos esos aportes ponderados produce la incertidumbre promedio de la variable aleatoria.
+\end{itemize}
+
+Por ello, la entropía no mide la sorpresa de un evento particular, sino la sorpresa media del experimento completo.
+
+\subsubsection*{Interpretación intuitiva}
+
+La entropía cuantifica cuán incierto es el resultado de una variable aleatoria antes de observarla.
+
+\begin{itemize}
+\item Si un resultado ocurre casi siempre, entonces el experimento es predecible y la entropía es baja.
+\item Si varios resultados son comparables en probabilidad, entonces el experimento es menos predecible y la entropía es mayor.
+\item Si todos los resultados posibles son igualmente probables, la incertidumbre es máxima.
+\end{itemize}
+
+En clasificación de fruta, esto significa que la entropía de \(Y\) mide qué tan difícil es, en principio, adivinar la clase del fruto antes de mirar su imagen o cualquier característica visual.
+
+\subsubsection*{Caso binario}
+
+En el problema de clasificación binaria,
+\[
+\mathcal{Y}=\{\text{sano},\text{defectuoso}\},
+\]
+de modo que
+\[
+H(Y)=-p(\text{sano})\log p(\text{sano})-p(\text{defectuoso})\log p(\text{defectuoso}).
+\]
+
+Si definimos
+\[
+p=p(\text{defectuoso}),
+\qquad
+1-p=p(\text{sano}),
+\]
+entonces la entropía puede escribirse como
+\[
+H(Y)=-(1-p)\log(1-p)-p\log p.
+\]
+
+Esta forma es especialmente útil porque reduce el análisis a una sola variable \(p\in[0,1]\).
+
+\subsubsection*{Ejemplo 1: lote altamente uniforme}
+
+Supongamos que en un lote el \(95\%\) de los frutos son sanos y el \(5\%\) son defectuosos. Entonces:
+\[
+p(\text{sano})=0.95,\qquad p(\text{defectuoso})=0.05.
+\]
+
+La entropía es
+\[
+H(Y)= -0.95\log_2(0.95)-0.05\log_2(0.05).
+\]
+
+Numéricamente,
+\[
+H(Y)\approx 0.2864\ \text{bits}.
+\]
+
+\paragraph{Interpretación.}
+Este valor es relativamente bajo. La razón es que el sistema enfrenta un problema poco incierto: antes de observar cualquier imagen, ya sabemos que lo más probable es que el fruto sea sano.
+
+\subsubsection*{Ejemplo 2: lote balanceado}
+
+Supongamos ahora que
+\[
+p(\text{sano})=0.5,\qquad p(\text{defectuoso})=0.5.
+\]
+
+Entonces:
+\[
+H(Y)= -0.5\log_2(0.5)-0.5\log_2(0.5)=1\ \text{bit}.
+\]
+
+\paragraph{Interpretación.}
+Esta es la máxima incertidumbre posible en el caso binario. Antes de observar el fruto, ambas clases son igualmente plausibles, de modo que el sistema no tiene ninguna ventaja previa para decidir.
+
+\subsubsection*{Ejemplo 3: lote moderadamente desbalanceado}
+
+Supongamos que
+\[
+p(\text{sano})=0.8,\qquad p(\text{defectuoso})=0.2.
+\]
+
+Entonces
+\[
+H(Y)= -0.8\log_2(0.8)-0.2\log_2(0.2).
+\]
+
+Numéricamente,
+\[
+H(Y)\approx 0.7219\ \text{bits}.
+\]
+
+\paragraph{Interpretación.}
+La incertidumbre es mayor que en el caso anterior de \(95\%-5\%\), pero menor que en el caso perfectamente balanceado. Esto muestra que la entropía crece cuando las clases se equilibran y disminuye cuando una de ellas domina.
+
+\subsubsection*{Derivación de propiedades fundamentales}
+
+\paragraph{1. No negatividad.}
+Como \(0\leq p(y)\leq 1\), se tiene
+\[
+\log p(y)\leq 0.
+\]
+Por tanto,
+\[
+-\log p(y)\geq 0.
+\]
+Como además \(p(y)\geq 0\), cada término de la suma
+\[
+-p(y)\log p(y)
+\]
+es no negativo. En consecuencia,
+\[
+H(Y)\geq 0.
+\]
+
+\paragraph{2. La entropía es nula cuando no hay incertidumbre.}
+Si existe un valor \(y_0\in\mathcal{Y}\) tal que
+\[
+p(y_0)=1,
+\]
+entonces necesariamente
+\[
+p(y)=0 \quad \text{para todo } y\neq y_0.
+\]
+
+En ese caso,
+\[
+H(Y)= -1\cdot \log 1 = 0,
+\]
+ya que \(\log 1=0\).
+
+Esto significa que si la variable aleatoria toma siempre el mismo valor, no hay incertidumbre alguna.
+
+\paragraph{3. La entropía es máxima cuando los resultados son equiprobables.}
+Supongamos que \(Y\) puede tomar \(m\) valores y que todos son igualmente probables:
+\[
+p(y)=\frac{1}{m}, \qquad y\in\mathcal{Y}.
+\]
+
+Entonces:
+\[
+H(Y)= -\sum_{y\in\mathcal{Y}} \frac{1}{m}\log\left(\frac{1}{m}\right).
+\]
+
+Como hay \(m\) términos iguales,
+\[
+H(Y)= -m\cdot \frac{1}{m}\log\left(\frac{1}{m}\right)
+= -\log\left(\frac{1}{m}\right)
+= \log m.
+\]
+
+Por tanto, cuando todos los resultados son equiprobables, la entropía alcanza el valor
+\[
+H(Y)=\log m.
+\]
+
+En el caso binario, donde \(m=2\), esto da:
+\[
+H(Y)=\log_2 2 = 1\ \text{bit}.
+\]
+
+\subsubsection*{Análisis funcional en el caso binario}
+
+Consideremos la función
+\[
+H(p)= -p\log p -(1-p)\log(1-p), \qquad 0<p<1.
+\]
+
+Esta función describe la entropía de una variable binaria en términos de la probabilidad \(p\) de una de sus clases.
+
+Su derivada es
+\[
+H'(p)= -\log p -1 + \log(1-p)+1
+= \log\left(\frac{1-p}{p}\right).
+\]
+
+Para encontrar los puntos críticos, resolvemos
+\[
+H'(p)=0.
+\]
+
+Esto equivale a
+\[
+\log\left(\frac{1-p}{p}\right)=0,
+\]
+y por tanto
+\[
+\frac{1-p}{p}=1.
+\]
+
+De aquí se obtiene
+\[
+1-p=p \quad \Rightarrow \quad p=\frac{1}{2}.
+\]
+
+La segunda derivada es
+\[
+H''(p)= -\frac{1}{p}-\frac{1}{1-p}<0
+\qquad \text{para todo } p\in(0,1),
+\]
+lo que muestra que la función es estrictamente cóncava y que el punto
+\[
+p=\frac{1}{2}
+\]
+corresponde a un máximo global.
+
+\paragraph{Conclusión.}
+En el caso binario, la entropía es máxima cuando ambas clases son equiprobables y disminuye al acercarse \(p\) a \(0\) o a \(1\).
+
+\subsubsection*{Interpretación en clasificación de fruta}
+
+Esta propiedad tiene una lectura inmediata en agroindustria:
+
+\begin{itemize}
+\item si casi todos los frutos son sanos, el problema de clasificación es relativamente fácil desde el punto de vista probabilístico inicial;
+\item si hay una mezcla equilibrada de frutos sanos y defectuosos, la decisión es intrínsecamente más incierta;
+\item la entropía no depende todavía de la calidad de la cámara, ni del algoritmo de segmentación, ni del clasificador; depende únicamente de la distribución de las clases.
+\end{itemize}
+
+Por tanto, \(H(Y)\) mide la dificultad intrínseca del problema antes de incorporar información visual.
+
+\subsubsection*{Ejemplo 4: comparación entre tres lotes}
+
+Consideremos tres lotes distintos:
+
+\[
+\text{Lote A: } (0.99,0.01),
+\]
+\[
+\text{Lote B: } (0.80,0.20),
+\]
+\[
+\text{Lote C: } (0.50,0.50),
+\]
+donde cada par representa
+\[
+\bigl(p(\text{sano}),p(\text{defectuoso})\bigr).
+\]
+
+Las entropías aproximadas en bits son:
+
+\[
+H_A \approx -0.99\log_2(0.99)-0.01\log_2(0.01)\approx 0.0808,
+\]
+
+\[
+H_B \approx -0.80\log_2(0.80)-0.20\log_2(0.20)\approx 0.7219,
+\]
+
+\[
+H_C = -0.50\log_2(0.50)-0.50\log_2(0.50)=1.
+\]
+
+\paragraph{Lectura comparativa.}
+\begin{itemize}
+\item El lote A es muy predecible.
+\item El lote B presenta una incertidumbre intermedia.
+\item El lote C representa la máxima dificultad inicial.
+\end{itemize}
+
+\subsubsection*{Observación sobre la unidad de medida}
+
+La unidad depende de la base del logaritmo:
+
+\begin{itemize}
+\item si usamos \(\log_2\), la entropía se mide en bits;
+\item si usamos \(\log_e\), la entropía se mide en nats;
+\item si usamos \(\log_{10}\), se mide en hartleys o dígitos decimales.
+\end{itemize}
+
+En aprendizaje automático e informática, la base \(2\) es especialmente común porque conecta naturalmente con codificación binaria.
+
+\subsubsection*{Significado estadístico profundo}
+
+La entropía no debe interpretarse únicamente como una fórmula algebraica. Su verdadero significado es probabilístico: representa la incertidumbre media antes de realizar la observación.
+
+En otras palabras:
+
+\begin{center}
+\emph{la entropía cuantifica cuánto desconocemos, en promedio, acerca del resultado de una variable aleatoria.}
+\end{center}
+
+Por eso aparece de manera natural en problemas de clasificación, compresión de datos, teoría de códigos, aprendizaje automático y selección de variables.
+
+\subsubsection*{Relación con el problema posterior}
+
+Hasta este punto, la entropía de \(Y\) solo describe la incertidumbre de la clase por sí sola. Sin embargo, en clasificación supervisada no basta con saber cuán incierta es la clase; necesitamos saber cuánto disminuye esa incertidumbre al observar una característica visual \(X_j\).
+
+Ese paso llevará a definir la entropía condicional
+\[
+H(Y\mid X_j)
+\]
+y, posteriormente, la información mutua
+\[
+I(X_j;Y)=H(Y)-H(Y\mid X_j).
+\]
+
+Por tanto, la entropía de Shannon es la línea base de incertidumbre contra la cual mediremos el valor informativo de cada variable.
+
+\subsubsection*{Ejercicios propuestos}
+
+\paragraph{Ejercicio 1.}
+Calcule la entropía, en bits, de una variable binaria con probabilidades:
+
+\[
+(0.9,0.1),\qquad (0.7,0.3),\qquad (0.5,0.5).
+\]
+
+Compare los resultados e interprete cuál de los tres casos presenta mayor incertidumbre.
+
+\paragraph{Ejercicio 2.}
+Demuestre que si una variable discreta \(Y\) satisface \(p(y_0)=1\) para algún \(y_0\), entonces
+\[
+H(Y)=0.
+\]
+
+\paragraph{Ejercicio 3.}
+Considere una variable aleatoria con tres clases equiprobables:
+\[
+p(y_1)=p(y_2)=p(y_3)=\frac{1}{3}.
+\]
+Calcule \(H(Y)\) en base \(2\) y compare el resultado con el caso binario equiprobable.
+
+\paragraph{Ejercicio 4.}
+Sea
+\[
+H(p)= -p\log_2 p -(1-p)\log_2(1-p).
+\]
+Grafique mentalmente o describa el comportamiento cualitativo de \(H(p)\) para \(p\in[0,1]\). Indique:
+\begin{enumerate}
+\item en qué puntos vale cero;
+\item en qué punto alcanza su máximo;
+\item por qué la gráfica debe ser simétrica respecto a \(p=0.5\).
+\end{enumerate}
+
+\paragraph{Ejercicio 5.}
+En una planta de selección, el \(85\%\) de los frutos de un lote son sanos y el \(15\%\) son defectuosos.
+
+\begin{enumerate}
+\item Escriba la expresión de \(H(Y)\).
+\item Calcule su valor aproximado en bits.
+\item Interprete si el problema es, en principio, altamente incierto o relativamente predecible.
+\end{enumerate}
+
+\paragraph{Ejercicio 6.}
+Explique con sus propias palabras la diferencia entre:
+
+\begin{itemize}
+\item el contenido de información \(h(y)\) de un evento particular;
+\item la entropía \(H(Y)\) de la variable completa.
+\end{itemize}
+
+\subsubsection*{Comentario pedagógico}
+
+El lector debe retener la siguiente distinción conceptual: el contenido de información mide la sorpresa de un resultado concreto, mientras que la entropía mide la sorpresa promedio del experimento. En clasificación de fruta, \(H(Y)\) expresa cuánta incertidumbre existe sobre la clase del fruto antes de observar cualquier característica visual. Esa incertidumbre inicial será el punto de partida para estudiar cuánto aporta cada variable extraída de la imagen.
+\subsection{Entropía conjunta}
+
+Si ahora consideramos simultáneamente una característica \(X_j\) y la clase \(Y\), podemos definir la entropía conjunta:
+\[
+H(X_j,Y) = -\sum_{x\in\mathcal{X}_j}\sum_{y\in\mathcal{Y}} p(x,y)\log p(x,y).
+\]
+
+Esta cantidad mide la incertidumbre total del sistema formado por la variable candidata y la clase. No solo describe la variabilidad de la clase, sino también la variabilidad de la medición visual observada.
+
+\subsection{Entropía condicional}
+
+Para selección de variables, la magnitud más importante después de la entropía es la entropía condicional. Se define como
+\[
+H(Y\mid X_j) = -\sum_{x\in\mathcal{X}_j}\sum_{y\in\mathcal{Y}} p(x,y)\log p(y\mid x).
+\]
+
+Esta expresión cuantifica la incertidumbre que permanece sobre la clase \(Y\) una vez que se conoce el valor de la variable \(X_j\).
+
+\paragraph{Lectura formal.}
+Mientras \(H(Y)\) representa la incertidumbre antes de observar la característica, \(H(Y\mid X_j)\) representa la incertidumbre residual después de observarla. Por tanto:
+
+\begin{itemize}
+\item Si \(H(Y\mid X_j)\approx H(Y)\), la variable \(X_j\) aporta poca información útil sobre la clase.
+\item Si \(H(Y\mid X_j)\ll H(Y)\), la variable \(X_j\) reduce de manera importante la incertidumbre y resulta informativa.
+\item Si \(H(Y\mid X_j)=0\), entonces \(X_j\) determina completamente la clase.
+\end{itemize}
+
+\paragraph{Relación estructural.}
+La entropía conjunta puede descomponerse como
+\[
+H(X_j,Y)=H(X_j)+H(Y\mid X_j),
+\]
+y de manera equivalente,
+\[
+H(X_j,Y)=H(Y)+H(X_j\mid Y).
+\]
+
+Estas identidades son importantes porque muestran que la incertidumbre total puede desglosarse en una parte propia de una variable y una parte residual asociada a la otra una vez conocida la primera.
+
+\subsection{Información mutua}
+
+La información mutua entre la característica \(X_j\) y la clase \(Y\) se define como
+\[
+I(X_j;Y)=H(Y)-H(Y\mid X_j).
+\]
+
+Esta ecuación es central en selección de variables. Expresa que la información mutua es exactamente la reducción promedio de incertidumbre sobre la clase cuando se observa la variable \(X_j\).
+
+Usando las identidades de entropía, también puede escribirse como
+\[
+I(X_j;Y)=H(X_j)+H(Y)-H(X_j,Y),
+\]
+o bien, en términos directos de la distribución conjunta,
+\[
+I(X_j;Y)=\sum_{x\in\mathcal{X}_j}\sum_{y\in\mathcal{Y}} p(x,y)\log\left(\frac{p(x,y)}{p(x)p(y)}\right).
+\]
+
+\paragraph{Interpretación formal de la última expresión.}
+La fracción
+\[
+\frac{p(x,y)}{p(x)p(y)}
+\]
+compara la probabilidad conjunta observada con la probabilidad que se tendría si \(X_j\) y \(Y\) fueran independientes. En consecuencia:
+
+\begin{itemize}
+\item Si \(p(x,y)=p(x)p(y)\) para todo \((x,y)\), entonces \(X_j\) y \(Y\) son independientes y
+\[
+I(X_j;Y)=0.
+\]
+\item Si conocer \(X_j\) altera sustancialmente la distribución de \(Y\), entonces la información mutua es positiva.
+\item Cuanto mayor sea \(I(X_j;Y)\), mayor será la dependencia estadística entre la característica y la clase.
+\end{itemize}
+
+\subsection{Propiedades fundamentales}
+
+La información mutua satisface propiedades matemáticas que la convierten en un criterio natural de selección:
+
+\begin{enumerate}
+\item \textbf{No negatividad}
+\[
+I(X_j;Y)\geq 0.
+\]
+
+\item \textbf{Simetría}
+\[
+I(X_j;Y)=I(Y;X_j).
+\]
+
+\item \textbf{Anulación bajo independencia}
+
+Si \(X_j\) y \(Y\) son independientes, entonces
+\[
+I(X_j;Y)=0.
+\]
+
+\item \textbf{Cota superior}
+\[
+I(X_j;Y)\leq H(Y),
+\]
+pues una variable no puede reducir más incertidumbre de la que inicialmente existe sobre la clase.
+\end{enumerate}
+
+Estas propiedades justifican su uso como métrica de relevancia. Una variable irrelevante no modifica la incertidumbre sobre la clase; una variable altamente informativa la reduce de forma significativa.
+
+\subsection{Selección de variables por máxima información}
+
+Supóngase que a partir de cada imagen se extraen \(m\) variables candidatas:
+\[
+X_1,X_2,\dots,X_m.
+\]
+
+Un criterio univariado de selección consiste en calcular
+\[
+I(X_j;Y), \qquad j=1,\dots,m,
+\]
+y ordenar las variables de mayor a menor valor informativo. Así, el subconjunto seleccionado puede expresarse como
+\[
+\mathcal{S}_k = \{X_{(1)},X_{(2)},\dots,X_{(k)}\},
+\]
+donde
+\[
+I(X_{(1)};Y)\geq I(X_{(2)};Y)\geq \cdots \geq I(X_{(m)};Y).
+\]
+
+Bajo este criterio, se conservan las variables que más reducen la incertidumbre de la clase. En términos de visión artificial para fruta, una característica como el área de daño superficial puede ser más útil que una medida global de brillo si su asociación estadística con la presencia de defectos es más fuerte.
+
+\subsection{Sentido teórico dentro del problema agroindustrial}
+
+En una línea de clasificación, la cámara y el sistema de visión generan una gran cantidad de mediciones posibles. No obstante, la meta no es acumular variables, sino identificar aquellas que aportan evidencia estadística sobre la condición comercial del fruto.
+
+La entropía \(H(Y)\) describe la incertidumbre inicial del diagnóstico. La entropía condicional \(H(Y\mid X_j)\) describe la incertidumbre que permanece después de observar una característica concreta. Finalmente, la información mutua
+\[
+I(X_j;Y)=H(Y)-H(Y\mid X_j)
+\]
+mide cuánto contribuye esa característica a resolver el problema de clasificación.
+
+Por ello, desde un punto de vista matemático riguroso, la selección de variables puede formularse como un proceso de búsqueda de características que maximicen la reducción de incertidumbre sobre la clase. Esta idea conecta de forma directa la teoría de la información con la construcción de sistemas de visión artificial para inspección de calidad en agroindustria.
+\end{document}
