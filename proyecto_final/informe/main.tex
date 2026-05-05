@@ -1,0 +1,626 @@
+\documentclass[12pt,a4paper]{article}
+
+% ── Paquetes ──────────────────────────────────────────────
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\setlength{\headheight}{13.6pt}
+\usepackage{parskip}
+\usepackage{float}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{mdframed}
+\usepackage{tikz}
+
+% ── Geometría ─────────────────────────────────────────────
+\geometry{
+  top=2.5cm, bottom=2.5cm,
+  left=3cm,  right=2.5cm
+}
+
+% ── Colores UNAL ──────────────────────────────────────────
+\definecolor{unalred}{RGB}{162, 26, 35}
+\definecolor{unaldark}{RGB}{100, 10, 18}
+\definecolor{unalgray}{RGB}{80, 80, 80}
+\definecolor{unallight}{RGB}{245, 240, 240}
+\definecolor{codegreen}{rgb}{0.13,0.55,0.13}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codeblue}{rgb}{0.13,0.29,0.53}
+\definecolor{backcolor}{rgb}{0.97,0.97,0.97}
+
+% ── Estilo de secciones ───────────────────────────────────
+\titleformat{\section}
+  {\large\bfseries\color{unalred}}
+  {\thesection.}{0.5em}{}
+  [\color{unalred}\titlerule]
+
+\titleformat{\subsection}
+  {\normalsize\bfseries\color{unaldark}}
+  {\thesubsection.}{0.5em}{}
+
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\color{unalgray}}
+  {\thesubsubsection.}{0.5em}{}
+
+% ── Estilo de código ──────────────────────────────────────
+\lstdefinestyle{mystyle}{
+  backgroundcolor=\color{backcolor},
+  commentstyle=\color{codegreen},
+  keywordstyle=\color{unalred}\bfseries,
+  stringstyle=\color{orange},
+  basicstyle=\ttfamily\footnotesize,
+  breaklines=true,
+  keepspaces=true,
+  numbers=left,
+  numberstyle=\tiny\color{codegray},
+  numbersep=8pt,
+  showspaces=false,
+  showstringspaces=false,
+  frame=single,
+  rulecolor=\color{unalred!30},
+  xleftmargin=15pt,
+  framexleftmargin=15pt,
+  aboveskip=10pt,
+  belowskip=10pt,
+}
+\lstset{style=mystyle}
+
+% ── Encabezado y pie ──────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{1.5pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{unalred}\leaders\hrule height \headrulewidth\hfill}}
+\lhead{\small\color{unalgray} Inteligencia Artificial para Agroindustria}
+\rhead{\small\color{unalgray} Juan David Castrillón Martínez}
+\rfoot{\small\color{unalgray}\thepage}
+\lfoot{\small\color{unalgray} Universidad Nacional de Colombia}
+
+% ── Hipervínculos ─────────────────────────────────────────
+\hypersetup{
+  colorlinks=true,
+  linkcolor=unalred,
+  urlcolor=unalred,
+  citecolor=unalred,
+}
+
+% ── Cajas de resultado ────────────────────────────────────
+\newmdenv[
+  linecolor=unalred,
+  linewidth=1.5pt,
+  leftline=true,
+  rightline=false,
+  topline=false,
+  bottomline=false,
+  backgroundcolor=unallight,
+  innerleftmargin=10pt,
+  innerrightmargin=10pt,
+  innertopmargin=8pt,
+  innerbottommargin=8pt,
+]{resultbox}
+
+% ══════════════════════════════════════════════════════════
+\begin{document}
+
+% ── Portada ───────────────────────────────────────────────
+\begin{titlepage}
+  \centering
+
+  % Franja superior roja
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[unalred] (current page.north west) rectangle
+      ([yshift=-3.2cm] current page.north east);
+    \fill[unaldark] ([yshift=-3.2cm] current page.north west) rectangle
+      ([yshift=-3.6cm] current page.north east);
+  \end{tikzpicture}
+
+  \vspace*{1.2cm}
+
+  % Logo
+  \includegraphics[width=4.5cm]{logo_unal.png}
+
+  \vspace{0.4cm}
+  {\color{white}\large\bfseries Universidad Nacional de Colombia\par}
+  {\color{white!80!unalred}\normalsize Facultad de Ingeniería y Administración\par}
+
+  \vspace{2.2cm}
+
+  % Línea decorativa
+  {\color{unalred}\rule{0.85\linewidth}{1.5pt}\par}
+  \vspace{0.3cm}
+
+  {\LARGE\bfseries\color{unalred}
+    Clasificación Tabular e Imagen\\[0.4em]
+    con Redes Neuronales en PyTorch\par}
+
+  \vspace{0.3cm}
+  {\color{unalred}\rule{0.85\linewidth}{1.5pt}\par}
+
+  \vspace{1.5cm}
+
+  {\large\bfseries Juan David Castrillón Martínez\par}
+  \vspace{0.3cm}
+  {\color{unalgray}\normalsize Proyecto Final\par}
+  {\color{unalgray}\normalsize Inteligencia Artificial para Ingeniería Agroindustria\par}
+
+  \vfill
+
+  % Franja inferior
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[unalred] (current page.south west) rectangle
+      ([yshift=1.8cm] current page.south east);
+  \end{tikzpicture}
+
+  {\color{unalgray}\normalsize\today\par}
+  \vspace{0.6cm}
+
+\end{titlepage}
+
+% ── Tabla de contenido ────────────────────────────────────
+\tableofcontents
+\newpage
+
+% ══════════════════════════════════════════════════════════
+\section{Introducción}
+
+Este proyecto presenta el desarrollo de dos modelos de clasificación supervisada
+usando técnicas de inteligencia artificial implementadas en PyTorch. El trabajo
+abarca dos dominios distintos del problema agroindustrial:
+
+\begin{itemize}
+  \item \textbf{Componente tabular:} clasificación binaria sobre un dataset
+        de variables numéricas, usando un Perceptrón Multicapa (MLP).
+  \item \textbf{Componente de imágenes:} clasificación multiclase de hojas
+        de papa a partir de fotografías, usando una Red Neuronal Convolucional (CNN).
+\end{itemize}
+
+En ambos casos se siguió un flujo completo: exploración del dataset,
+preprocesamiento, diseño del modelo, entrenamiento, evaluación con métricas
+y análisis crítico de los resultados.
+
+% ══════════════════════════════════════════════════════════
+\section{Componente Tabular}
+
+\subsection{Descripción del dataset}
+
+El dataset utilizado es \texttt{phpnThNfi.arff}, cargado desde el repositorio
+del curso. Contiene \textbf{4839 observaciones} con \textbf{5 variables de entrada
+numéricas} (V1 a V5) y una \textbf{variable objetivo binaria} denominada
+\textit{Class}, con valores \texttt{'1'} (clase~0) y \texttt{'2'} (clase~1).
+
+El dataset presenta un \textbf{desbalance de clases significativo}:
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{lrr}
+    \toprule
+    \textbf{Clase} & \textbf{Muestras (train)} & \textbf{Proporción} \\
+    \midrule
+    0 (original '1') & 3{,}662 & 94.6\,\% \\
+    1 (original '2') &   209   &  5.4\,\% \\
+    \midrule
+    \textbf{Total train} & 3{,}871 & \\
+    \textbf{Total test}  &   968   & \\
+    \bottomrule
+  \end{tabular}
+  \caption{Distribución de clases en el dataset tabular.}
+\end{table}
+
+\subsection{Preprocesamiento}
+
+El pipeline implementado en \texttt{preprocess.py} realiza los siguientes pasos:
+
+\begin{enumerate}
+  \item Carga del archivo ARFF con \texttt{scipy.io.arff} y conversión a DataFrame.
+  \item Limpieza de la variable objetivo: decodificación de \texttt{bytes} a \texttt{string}.
+  \item Separación de $X = [V1, V2, V3, V4, V5]$ e $y$.
+  \item Codificación con \texttt{LabelEncoder}: \texttt{'1'} $\to$ 0, \texttt{'2'} $\to$ 1.
+  \item División 80\,\%/20\,\% con muestreo estratificado.
+  \item Escalado con \texttt{StandardScaler} ajustado solo sobre train:
+        $x_{\text{norm}} = (x - \mu_{\text{train}}) / \sigma_{\text{train}}$
+  \item Conversión a tensores PyTorch.
+\end{enumerate}
+
+\begin{lstlisting}[language=Python, caption={Pipeline de preprocesamiento (\texttt{preprocess.py})}]
+def preprocess_pipeline(filepath, feature_cols=None,
+                        target_col="Class", test_size=0.2,
+                        random_state=42):
+    if feature_cols is None:
+        feature_cols = ["V1", "V2", "V3", "V4", "V5"]
+
+    df = load_arff(filepath)
+    df = clean_target(df, target_col)
+    X, y = split_features_target(df, feature_cols, target_col)
+    y, le = encode_target(y)
+    X_train, X_test, y_train, y_test = split_data(
+        X, y, test_size, random_state)
+    X_train, X_test, scaler = scale_features(X_train, X_test)
+    X_train_t, X_test_t, y_train_t, y_test_t = to_tensors(
+        X_train, X_test, y_train, y_test)
+    return {"X_train": X_train_t, "X_test": X_test_t,
+            "y_train": y_train_t, "y_test": y_test_t,
+            "num_classes": len(le.classes_)}
+\end{lstlisting}
+
+\subsection{Modelo: Perceptrón Multicapa (MLP)}
+
+\subsubsection{Fundamento matemático}
+
+Un MLP transforma la entrada $\mathbf{x} \in \mathbb{R}^5$ mediante capas
+sucesivas de transformaciones lineales y no lineales. Cada capa realiza:
+
+\[
+  \mathbf{z}^{(l)} = \mathbf{W}^{(l)} \mathbf{a}^{(l-1)} + \mathbf{b}^{(l)}
+  \qquad
+  \mathbf{a}^{(l)} = \text{ReLU}(\mathbf{z}^{(l)}) = \max(0,\, \mathbf{z}^{(l)})
+\]
+
+La capa de salida produce logits $\mathbf{z}^{(\text{out})} \in \mathbb{R}^2$
+sin activación, ya que \texttt{CrossEntropyLoss} incorpora \texttt{LogSoftmax}
+internamente.
+
+\subsubsection{Arquitectura}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{llcc}
+    \toprule
+    \textbf{Capa} & \textbf{Tipo} & \textbf{Entrada} & \textbf{Salida} \\
+    \midrule
+    1 & \texttt{Linear} + ReLU  & 5  & 16 \\
+    2 & \texttt{Linear} + ReLU  & 16 & 8  \\
+    3 & \texttt{Linear} (salida) & 8 & 2  \\
+    \bottomrule
+  \end{tabular}
+  \caption{Arquitectura del MLP.}
+\end{table}
+
+\begin{lstlisting}[language=Python, caption={Definición del MLP (\texttt{model.py})}]
+class MLP(nn.Module):
+    def __init__(self, input_dim: int, num_classes: int):
+        super().__init__()
+        self.fc1   = nn.Linear(input_dim, 16)
+        self.relu1 = nn.ReLU()
+        self.fc2   = nn.Linear(16, 8)
+        self.relu2 = nn.ReLU()
+        self.fc3   = nn.Linear(8, num_classes)
+
+    def forward(self, x):
+        x = self.relu1(self.fc1(x))
+        x = self.relu2(self.fc2(x))
+        return self.fc3(x)   # logits crudos, sin Softmax
+\end{lstlisting}
+
+\subsection{Entrenamiento}
+
+\subsubsection{Manejo del desbalance de clases}
+
+Dado el desbalance severo (ratio $\approx$17:1), se aplicaron pesos de clase
+con la fórmula estándar equivalente a \texttt{class\_weight='balanced'}
+de scikit-learn:
+
+\[
+  w_i = \frac{n_{\text{total}}}{n_{\text{clases}} \times n_i}
+\]
+
+Los pesos resultantes con el dataset fueron:
+\begin{itemize}
+  \item Clase 0 (3.662 muestras): $w_0 = 0{,}5285$
+  \item Clase 1 (209 muestras):   $w_1 = 9{,}2608$
+\end{itemize}
+
+\begin{lstlisting}[language=Python, caption={Cálculo de pesos de clase (\texttt{train.py})}]
+def compute_class_weights(y_train):
+    class_counts = torch.bincount(y_train)
+    n_total      = len(y_train)
+    n_classes    = len(class_counts)
+    weights = n_total / (n_classes * class_counts.float())
+    return weights
+
+weights   = compute_class_weights(y_train)
+criterion = nn.CrossEntropyLoss(weight=weights)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+\end{lstlisting}
+
+\subsubsection{Evolución de la pérdida}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{cc|cc}
+    \toprule
+    \textbf{Época} & \textbf{Loss} & \textbf{Época} & \textbf{Loss} \\
+    \midrule
+     1 & 0.6943 & 11 & 0.6834 \\
+     2 & 0.6933 & 12 & 0.6823 \\
+     3 & 0.6922 & 13 & 0.6812 \\
+     4 & 0.6911 & 14 & 0.6801 \\
+     5 & 0.6900 & 15 & 0.6790 \\
+     6 & 0.6889 & 16 & 0.6779 \\
+     7 & 0.6878 & 17 & 0.6768 \\
+     8 & 0.6867 & 18 & 0.6757 \\
+     9 & 0.6856 & 19 & 0.6746 \\
+    10 & 0.6845 & 20 & 0.6735 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Evolución de la pérdida por época — componente tabular.}
+\end{table}
+
+\subsection{Resultados y evaluación}
+
+\begin{resultbox}
+\textbf{Accuracy en test: 67.98\,\%}
+\end{resultbox}
+
+\vspace{0.5em}
+
+Matriz de confusión:
+\[
+  \text{CM} =
+  \begin{bmatrix}
+    622 & 294 \\
+     16 &  36
+  \end{bmatrix}
+\]
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{lrrr}
+    \toprule
+    \textbf{Clase} & \textbf{Aciertos} & \textbf{Total} & \textbf{\% por clase} \\
+    \midrule
+    0 & 622 & 916 & 67.9\,\% \\
+    1 &  36 &  52 & 69.2\,\% \\
+    \bottomrule
+  \end{tabular}
+  \caption{Detalle de aciertos por clase — componente tabular.}
+\end{table}
+
+\subsection{Análisis}
+
+El modelo logra aprender \textbf{ambas clases de forma equilibrada} gracias a
+los pesos aplicados, con tasas de acierto similares (67.9\,\% y 69.2\,\%).
+Esto contrasta con el comportamiento sin pesos, donde el modelo predecía siempre
+la clase mayoritaria con accuracy ficticia del 94.6\,\% y 0\,\% de aciertos en
+la clase minoritaria.
+
+La descenso gradual y constante de la pérdida (0.6943 $\to$ 0.6735) indica
+aprendizaje sostenido, aunque la convergencia lenta sugiere que el dataset es
+intrínsecamente difícil de separar con estas features. Arquitecturas más profundas
+o técnicas de feature engineering podrían mejorar el resultado.
+
+% ══════════════════════════════════════════════════════════
+\section{Componente de Imágenes}
+
+\subsection{Descripción del dataset}
+
+El dataset \texttt{potato\_subset} contiene \textbf{456 imágenes} de hojas de
+papa clasificadas en tres categorías:
+
+\begin{itemize}
+  \item \texttt{Potato\_\_\_Early\_blight} — tizón temprano
+  \item \texttt{Potato\_\_\_Late\_blight}  — tizón tardío
+  \item \texttt{Potato\_\_\_healthy}        — hoja sana
+\end{itemize}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{lrr}
+    \toprule
+    \textbf{Conjunto} & \textbf{Imágenes} & \textbf{Proporción} \\
+    \midrule
+    Entrenamiento & 364 & 80\,\% \\
+    Prueba        &  92 & 20\,\% \\
+    \midrule
+    Total & 456 & 100\,\% \\
+    \bottomrule
+  \end{tabular}
+  \caption{División del dataset de imágenes.}
+\end{table}
+
+\subsection{Preprocesamiento}
+
+Las imágenes se cargan con \texttt{torchvision.datasets.ImageFolder}, que
+detecta las clases automáticamente desde la estructura de carpetas. El pipeline
+de transformaciones es:
+
+\begin{enumerate}
+  \item \textbf{Resize} a $128 \times 128$ px para unificar dimensiones.
+  \item \textbf{ToTensor}: $(H \times W \times C)$ uint8 $[0,255]$
+        $\to$ $(C \times H \times W)$ float32 $[0,1]$.
+  \item \textbf{Normalize} canal a canal:
+        $x_{\text{norm}} = (x - 0.5) / 0.5 \in [-1, 1]$
+\end{enumerate}
+
+\begin{lstlisting}[language=Python, caption={Transformaciones e ImageFolder (\texttt{dataset.py})}]
+transform = transforms.Compose([
+    transforms.Resize((128, 128)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.5, 0.5, 0.5],
+                         std =[0.5, 0.5, 0.5]),
+])
+dataset = datasets.ImageFolder(root=data_path, transform=transform)
+train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+test_loader  = DataLoader(test_dataset,  batch_size=32, shuffle=False)
+\end{lstlisting}
+
+\subsection{Modelo: Red Neuronal Convolucional (CNN)}
+
+\subsubsection{Fundamento matemático}
+
+Una CNN extrae características espaciales mediante filtros aprendibles.
+La operación de convolución 2D es:
+
+\[
+  S[i,j] = \sum_{m}\sum_{n} I[i+m,\, j+n] \cdot K[m,n]
+\]
+
+donde $I$ es el mapa de entrada y $K$ el filtro (kernel). El \textbf{MaxPooling}
+reduce la resolución tomando el máximo de cada ventana $2 \times 2$, logrando
+invariancia a traslaciones y reduciendo parámetros.
+
+\subsubsection{Arquitectura y flujo de dimensiones}
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabular}{llcc}
+    \toprule
+    \textbf{Capa} & \textbf{Tipo} & \textbf{Entrada} & \textbf{Salida} \\
+    \midrule
+    Conv1 + ReLU & \texttt{Conv2d(3,16,k=3,p=1)}  & $(B,3,128,128)$  & $(B,16,128,128)$ \\
+    MaxPool1     & \texttt{MaxPool2d(2,2)}          & $(B,16,128,128)$ & $(B,16,64,64)$   \\
+    Conv2 + ReLU & \texttt{Conv2d(16,32,k=3,p=1)} & $(B,16,64,64)$   & $(B,32,64,64)$   \\
+    MaxPool2     & \texttt{MaxPool2d(2,2)}          & $(B,32,64,64)$   & $(B,32,32,32)$   \\
+    Flatten      & —                                & $(B,32,32,32)$   & $(B,32768)$      \\
+    FC1 + ReLU   & \texttt{Linear(32768,64)}        & $(B,32768)$      & $(B,64)$         \\
+    FC2 (salida) & \texttt{Linear(64,3)}            & $(B,64)$         & $(B,3)$          \\
+    \bottomrule
+  \end{tabular}
+  \caption{Arquitectura CNN y flujo de dimensiones ($B$ = tamaño de lote).}
+\end{table}
+
+\begin{lstlisting}[language=Python, caption={Definición de la CNN (\texttt{model.py})}]
+class CNN(nn.Module):
+    def __init__(self, num_classes: int):
+        super().__init__()
+        self.conv1   = nn.Conv2d(3,  16, kernel_size=3, padding=1)
+        self.relu1   = nn.ReLU()
+        self.pool1   = nn.MaxPool2d(2, 2)
+        self.conv2   = nn.Conv2d(16, 32, kernel_size=3, padding=1)
+        self.relu2   = nn.ReLU()
+        self.pool2   = nn.MaxPool2d(2, 2)
+        self.flatten = nn.Flatten()
+        self.fc1     = nn.Linear(32 * 32 * 32, 64)
+        self.relu3   = nn.ReLU()
+        self.fc2     = nn.Linear(64, num_classes)
+
+    def forward(self, x):
+        x = self.pool1(self.relu1(self.conv1(x)))
+        x = self.pool2(self.relu2(self.conv2(x)))
+        x = self.flatten(x)
+        x = self.relu3(self.fc1(x))
+        return self.fc2(x)   # logits crudos, sin Softmax
+\end{lstlisting}
+
+\subsection{Entrenamiento}
+
+El modelo se entrenó durante \textbf{10 épocas} iterando sobre batches de 32
+imágenes. Se usó \texttt{CrossEntropyLoss} sin pesos (clases balanceadas) y
+\texttt{Adam} con $\alpha = 0{,}001$.
+
+\begin{lstlisting}[language=Python, caption={Bucle de entrenamiento por batches (\texttt{train.py})}]
+for epoch in range(1, epochs + 1):
+    running_loss = 0.0
+    for images, labels in train_loader:
+        images, labels = images.to(device), labels.to(device)
+        logits = model(images)
+        loss   = criterion(logits, labels)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        running_loss += loss.item()
+    avg_loss = running_loss / len(train_loader)
+    print(f"  Epoca {epoch}/{epochs}  |  Loss: {avg_loss:.4f}")
+\end{lstlisting}
+
+\subsubsection{Evolución de la pérdida}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{cc}
+    \toprule
+    \textbf{Época} & \textbf{Loss promedio} \\
+    \midrule
+     1 & 0.7736 \\
+     2 & 0.3956 \\
+     3 & 0.4436 \\
+     4 & 0.2250 \\
+     5 & 0.1902 \\
+     6 & 0.1388 \\
+     7 & 0.1166 \\
+     8 & 0.0755 \\
+     9 & 0.0325 \\
+    10 & 0.0226 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Evolución de la pérdida por época — componente de imágenes.}
+\end{table}
+
+\subsection{Resultados y evaluación}
+
+\begin{resultbox}
+\textbf{Accuracy en test: 92.39\,\%}
+\end{resultbox}
+
+\vspace{0.5em}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{lr}
+    \toprule
+    \textbf{Métrica} & \textbf{Valor} \\
+    \midrule
+    Accuracy en test       & 92.39\,\% \\
+    Loss inicial (época 1) & 0.7736    \\
+    Loss final  (época 10) & 0.0226    \\
+    Reducción de pérdida   & 97.1\,\%  \\
+    \bottomrule
+  \end{tabular}
+  \caption{Resumen de resultados — componente de imágenes.}
+\end{table}
+
+\subsection{Análisis}
+
+La caída de la pérdida de 0.7736 a 0.0226 en solo 10 épocas indica que la CNN
+aprende características discriminativas de forma efectiva. La accuracy del
+\textbf{92.39\,\%} es un resultado sólido considerando el tamaño reducido del
+dataset (456 imágenes).
+
+El leve repunte en época~3 (0.4436 tras 0.3956) es normal en entrenamiento
+por batches con \texttt{shuffle=True}. A partir de época~4 la tendencia es
+consistentemente decreciente.
+
+La pérdida muy baja al final (0.0226) sugiere posible \textbf{sobreajuste}.
+Para producción se recomendaría aplicar \textit{data augmentation} (rotaciones,
+volteos, cambios de brillo) y \textit{Dropout} como regularización.
+
+% ══════════════════════════════════════════════════════════
+\section{Conclusiones}
+
+Este proyecto demostró el desarrollo completo de dos pipelines de clasificación
+supervisada en PyTorch aplicados a problemas agroindustriales reales.
+
+\textbf{Componente tabular:}
+\begin{itemize}
+  \item El desbalance severo (ratio 17:1) no puede ignorarse: sin manejo, el
+        modelo produce accuracy ficticia del 94.6\,\% con 0\,\% de aciertos
+        en la clase minoritaria.
+  \item Los pesos de clase con $w_i = n_{\text{total}}/(n_{\text{clases}} \times n_i)$
+        logran tasas equilibradas de 67.9\,\% y 69.2\,\% por clase.
+  \item La convergencia lenta sugiere que el problema requiere más datos o
+        features más discriminativas.
+\end{itemize}
+
+\textbf{Componente de imágenes:}
+\begin{itemize}
+  \item La CNN alcanza 92.39\,\% de accuracy en 10 épocas, demostrando la
+        efectividad de las arquitecturas convolucionales para clasificación
+        de imágenes agrícolas.
+  \item La pérdida baja final indica posible sobreajuste; en producción se
+        recomendaría data augmentation y regularización.
+\end{itemize}
+
+\textbf{Reflexión:} La elección correcta de la función de pérdida, el manejo
+del desbalance y el preprocesamiento adecuado son tan importantes como la
+arquitectura. La comprensión del problema precede a la solución técnica.
+
+\end{document}

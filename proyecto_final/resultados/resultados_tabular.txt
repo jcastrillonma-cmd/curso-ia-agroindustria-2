@@ -1,0 +1,55 @@
+==================================================
+  RESULTADOS — COMPONENTE TABULAR
+==================================================
+
+Dataset    : phpnThNfi.arff
+Muestras   : 4839 (3871 train / 968 test)
+Features   : V1, V2, V3, V4, V5
+Clases     : 0 (original '1') / 1 (original '2')
+Desbalance : Clase 0 = 3662 muestras | Clase 1 = 209 muestras (ratio ~17:1)
+
+Modelo     : MLP  Linear(5,16) > ReLU > Linear(16,8) > ReLU > Linear(8,2)
+Optimizador: Adam  lr=0.001
+Loss fn    : CrossEntropyLoss con pesos de clase
+  Clase 0 peso: 0.5285
+  Clase 1 peso: 9.2608
+Épocas     : 20
+
+──────────────────────────────────────────────────
+  ENTRENAMIENTO
+──────────────────────────────────────────────────
+Época  1/20  |  Loss: 0.6943
+Época  2/20  |  Loss: 0.6933
+Época  3/20  |  Loss: 0.6922
+Época  4/20  |  Loss: 0.6911
+Época  5/20  |  Loss: 0.6900
+Época  6/20  |  Loss: 0.6889
+Época  7/20  |  Loss: 0.6878
+Época  8/20  |  Loss: 0.6867
+Época  9/20  |  Loss: 0.6856
+Época 10/20  |  Loss: 0.6845
+Época 11/20  |  Loss: 0.6834
+Época 12/20  |  Loss: 0.6823
+Época 13/20  |  Loss: 0.6812
+Época 14/20  |  Loss: 0.6801
+Época 15/20  |  Loss: 0.6790
+Época 16/20  |  Loss: 0.6779
+Época 17/20  |  Loss: 0.6768
+Época 18/20  |  Loss: 0.6757
+Época 19/20  |  Loss: 0.6746
+Época 20/20  |  Loss: 0.6735
+
+──────────────────────────────────────────────────
+  EVALUACIÓN
+──────────────────────────────────────────────────
+Accuracy en test : 67.98%
+
+Matriz de confusión:
+[[622 294]
+ [ 16  36]]
+
+Detalle por clase:
+   Clase   Aciertos    Total   % Clase
+  ─────────────────────────────────────
+       0        622      916     67.9%
+       1         36       52     69.2%
